@@ -92,7 +92,8 @@ function Profile() {
           <p>Consumption Sharing Privacy: {firestoreUser.consumptionSharingPrivacy}</p>
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
             <button className={styles.signoutBtn} onClick={signOut}>Sign Out</button>
-            <button className={styles.signoutBtn} onClick={() => setIsSettingsDialogOpen(true)}>Location Sharing</button>
+            <button className={styles.localSharingBtn} onClick={() => setIsSettingsDialogOpen(true)}>Location Sharing</button>
+            <button className={styles.signoutBtn} onClick={() => setIsSettingsDialogOpen(true)}>Change Location</button>
           </div>
         </div>
       </div>
