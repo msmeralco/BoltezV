@@ -1,7 +1,7 @@
 .nav-center-container {
   display: flex;
-  align-items: flex-start;    /* horizontal centering */
-  justify-content: center;/* vertical centering */
+  align-items: flex-start;
+  justify-content: center;
   margin: 20px;
 }
 
