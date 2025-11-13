@@ -3,7 +3,7 @@ import './App.css'
 import NavigationBar from './components/common/NavigationBar';
 
 import Home from './pages/Home';
-import Profile from './pages/Profile';
+import Profile from './pages/Profile/Profile.jsx';
 import Login from "./pages/Login";
 import TestPage from './pages/TestPage';
 import Connections from './pages/Connections';
