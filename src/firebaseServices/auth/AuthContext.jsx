@@ -106,6 +106,7 @@ export function AuthProvider({ children }) {
 						pendingRequestsIn: {},
 						pendingRequestsOut: {},
 						profileImageUrl,
+						userRole: 'regular',
 					});
 				}
 			}

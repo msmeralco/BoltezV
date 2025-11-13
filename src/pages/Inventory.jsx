@@ -134,7 +134,6 @@ function Inventory() {
         addedBy: "manual",
         imageFile: null,
       });
-      alert("Appliance added successfully!");
     } catch (error) {
       console.error("Error adding appliance:", error);
       alert("Failed to add appliance. Please try again.");
@@ -148,7 +147,6 @@ function Inventory() {
       const result = await removeApplianceFromInventory(user.uid, applianceId);
       if (result.success) {
         setAppliances((prev) => prev.filter((appliance) => appliance.id !== applianceId));
-        alert("Appliance removed successfully!");
       }
     } catch (error) {
       console.error("Error removing appliance:", error);
@@ -196,7 +194,6 @@ function Inventory() {
       
       setEditingApplianceId(null);
       setEditFormData(null);
-      alert("Appliance updated successfully!");
     } catch (error) {
       console.error("Error updating appliance:", error);
       alert("Failed to update appliance. Please try again.");
