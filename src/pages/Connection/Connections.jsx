@@ -148,25 +148,27 @@ function Connections() {
               <div className={styles.connectionMeta}>
                 <h2>{connection.displayName}</h2>
                 <p>Email: {connection.email}</p>
+                <div className={styles.connectionsBtn}>
+                  <Link to={`/mappage`}>
+                    <button className={styles.locateMapBtn}>Locate in the map</button>
+                  </Link>
+                  {[("public"), ("networkOnly")].includes(connection.consumptionSharingPrivacy) && (
+                    <>
+                      <Link to={`/connections/${connection.id}/inventory`}>
+                        <button className={styles.seeInventoryBtn}>See Inventory</button>
+                      </Link>
+                    </>
+                  )}
+                </div>
               </div>
 
               <div className={styles.connectionActions}>
-                {[("public"), ("networkOnly")].includes(connection.consumptionSharingPrivacy) && (
-                  <>
-                    <Link to={`/connections/${connection.id}/inventory`}>
-                      <button className={styles.seeInventoryBtn}>See Inventory</button>
-                    </Link>
-                    <Link to={`/mappage`}>
-                      <button className={styles.locateMapBtn}>Locate in the map</button>
-                    </Link>
-                  </>
-                )}
                 <button
                   className={styles.removeConnectionBtn}
                   onClick={() => handleRemoveConnection(connection.id)}
                   disabled={disconnectingId === connection.id}
                 >
-                  {disconnectingId === connection.id ? "Removing..." : "Remove Connection"}
+                  {disconnectingId === connection.id ? "Removing..." : "Remove"}
                 </button>
 
                 {disconnectionFeedback.connectionId === connection.id && (

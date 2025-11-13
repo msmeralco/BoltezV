@@ -78,14 +78,12 @@
 
 .connectionActions {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
+  justify-content: center;
 }
 
 .connectionActions button,
-.sendConnectionRequest button {
-
+.sendConnectionRequest button,
+.connectionMeta .connectionsBtn button {
   padding: 0.45rem 0.9rem;
   border-radius: 8px;
   border: none;
@@ -95,9 +93,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  white-space: nowrap; 
-  min-width: 92px; 
-  width: 10rem;
+  white-space: nowrap;
+  min-width: 92px;
+  width: auto; /* allow flexible sizing */
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .sendConnectionRequest button,
@@ -105,12 +104,19 @@
     width: 12rem;
 }
 
-.connectionActions .seeInventoryBtn {
+.connectionMeta .connectionsBtn {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.connectionMeta .connectionsBtn .seeInventoryBtn {
   background: var(--tertiary-500);
   color: var(--secondary-darkest);
 }
 
-.connectionActions .locateBtn {
+
+.connectionMeta .connectionsBtn .locateMapBtn {
   background: var(--secondary-base);
   color: var(--secondary-darkest);
 }
@@ -141,9 +147,17 @@
   color: #666666;
 }
 
-.connectionActions button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+.connectionActions button:hover:not(:disabled),
+.connectionMeta .connectionsBtn button:hover:not(:disabled) {
+  /* small lift + subtle brighten to highlight the button */
+  filter: brightness(1.04);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+}
+
+.connectionActions button:active:not(:disabled),
+.connectionMeta .connectionsBtn button:active:not(:disabled) {
+  filter: brightness(1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
 }
 
 
