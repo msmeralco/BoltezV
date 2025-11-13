@@ -306,3 +306,8 @@
     - **Type**: `timestamp`
     - **Description**: Timestamp when the announcement was uploaded.
 
+9. **`imageUrl`**
+
+    - **Type**: `string`
+    - **Description**: Image URL (Cloudinary) attached to the report.
+

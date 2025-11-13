@@ -1,6 +1,9 @@
 import { db } from "../firebaseConfig";
 import { where, collection, orderBy, addDoc, doc, updateDoc, getDoc, GeoPoint, deleteField, onSnapshot, query, documentId, deleteDoc, getDocs, serverTimestamp } from "firebase/firestore";
 
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const REPORT_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_REPORT_UPLOAD_PRESET;
+
 /**
  * Add a report document to the `reports` collection.
  *
@@ -209,5 +212,44 @@ export async function getReportById(reportId) {
   } catch (error) {
     console.error("Error retrieving report:", error);
     throw error;
+  }
+}
+
+/**
+ * Uploads an image file to Cloudinary and retrieves the secure URL of the uploaded image.
+ *
+ * This function uses the Cloudinary API to upload an image file. The `REPORT_UPLOAD_PRESET`
+ * and `CLOUD_NAME` environment variables are used to configure the upload.
+ *
+ * @param {File} imageFile - The image file to upload. Must be a valid file object.
+ * @returns {Promise<string|null>} - A promise that resolves to the secure URL of the uploaded image,
+ * or `null` if the upload fails or no file is provided.
+ *
+ * @throws {Error} - Throws an error if the Cloudinary upload fails.
+ */
+export async function getReportImageURL(imageFile) {
+  if (!imageFile) return null;
+
+  try {
+    const form = new FormData();
+    form.append("file", imageFile);
+    form.append("upload_preset", REPORT_UPLOAD_PRESET);
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {
+      method: "POST",
+      body: form,
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Cloudinary upload failed: ${res.status} ${errText}`);
+    }
+
+    const imageURL = await res.json();
+    // return the URL string (secure_url is recommended)
+    return imageURL?.secure_url || "";
+  } catch (err) {
+    console.error("Image upload error:", err);
+    return null;
   }
 }

@@ -1,6 +1,9 @@
 import { db } from "../firebaseConfig";
 import { where, collection, orderBy, addDoc, doc, updateDoc, getDoc, GeoPoint, deleteField, onSnapshot, query, documentId, deleteDoc, getDocs, serverTimestamp } from "firebase/firestore";
 
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const ANNOUNCEMENT_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_ANNOUNCEMENT_UPLOAD_PRESET;
+
 /**
  * Add an announcement document to the `announcements` collection.
  *
@@ -26,7 +29,7 @@ export async function addAnnouncement(announcementData) {
             throw new Error("announcementData object is required");
         }
 
-        const { userId, title, description, location, geopoints, startTime, endTime } = announcementData;
+        const { userId, title, description, location, geopoints, startTime, endTime, imageUrl } = announcementData;
 
         if (!userId) throw new Error("userId is required");
         if (!title) throw new Error("title is required");
@@ -53,6 +56,7 @@ export async function addAnnouncement(announcementData) {
             geopoints: Array.isArray(geopoints) ? geopoints : [],
             startTime: startTime || null,
             endTime: endTime || null,
+            imageUrl: imageUrl || null, // Include imageUrl in Firestore payload
             timeCreated: serverTimestamp(),
         };
 
@@ -150,5 +154,44 @@ export async function getAnnouncementById(announcementId) {
   } catch (error) {
     console.error("Error retrieving announcement:", error);
     throw error;
+  }
+}
+
+/**
+ * Uploads an image file to Cloudinary and retrieves the secure URL of the uploaded image.
+ *
+ * This function uses the Cloudinary API to upload an image file. The `ANNOUNCEMENT_UPLOAD_PRESET`
+ * and `CLOUD_NAME` environment variables are used to configure the upload.
+ *
+ * @param {File} imageFile - The image file to upload. Must be a valid file object.
+ * @returns {Promise<string|null>} - A promise that resolves to the secure URL of the uploaded image,
+ * or `null` if the upload fails or no file is provided.
+ *
+ * @throws {Error} - Throws an error if the Cloudinary upload fails.
+ */
+export async function getAnnouncementImageURL(imageFile) {
+  if (!imageFile) return null;
+
+  try {
+    const form = new FormData();
+    form.append("file", imageFile);
+    form.append("upload_preset", ANNOUNCEMENT_UPLOAD_PRESET);
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {
+      method: "POST",
+      body: form,
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Cloudinary upload failed: ${res.status} ${errText}`);
+    }
+
+    const imageURL = await res.json();
+    // return the URL string (secure_url is recommended)
+    return imageURL?.secure_url || "";
+  } catch (err) {
+    console.error("Image upload error:", err);
+    return null;
   }
 }

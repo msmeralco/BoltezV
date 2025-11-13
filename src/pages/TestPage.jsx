@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { getUserByUid, addDummyUserWithInventory, connectTwoUsers, disconnectTwoUsers, sendConnectionRequest } from "../firebaseServices/database/usersFunctions";
-import { addReport } from "../firebaseServices/database/reportsFunctions";
+import { addReport, getReportImageURL } from "../firebaseServices/database/reportsFunctions";
 import { addOutage } from "../firebaseServices/database/outagesFunctions";
-import { addAnnouncement } from "../firebaseServices/database/announcementsFunctions";
+import { addAnnouncement, getAnnouncementImageURL } from "../firebaseServices/database/announcementsFunctions";
 import { GeoPoint } from "firebase/firestore"; // Import GeoPoint
 
 function TestPage() {
@@ -18,7 +18,7 @@ function TestPage() {
     reporterName: "",
     title: "",
     description: "",
-    imageURL: "",
+    imageFile: null, // Changed from imageURL to imageFile
     locationLat: "",
     locationLng: "",
     approvalStatus: "",
@@ -34,12 +34,13 @@ function TestPage() {
     locationLng: "",
     approvalStatus: "",
     responseStatus: "",
-    geopoints: "",
+    geopoints: [],
   });
   const [announcementData, setAnnouncementData] = useState({
     userId: "",
     title: "",
     description: "",
+    imageFile: null, // Changed from imageURL to imageFile
     locationLat: "",
     locationLng: "",
     startTime: "",
@@ -112,25 +113,29 @@ function TestPage() {
   async function onSubmitAddReport(event) {
     event.preventDefault();
     try {
-      const { reporterId, reporterName, title, description, imageURL, locationLat, locationLng, approvalStatus, responseStatus } = reportData;
-      const location =
-        locationLat && locationLng
-          ? { lat: parseFloat(locationLat), lng: parseFloat(locationLng) }
-          : null;
+      const imageURL = reportData.imageFile
+        ? await getReportImageURL(reportData.imageFile)
+        : null;
 
-      const result = await addReport({
-        reporterId,
-        reporterName,
-        title,
-        description,
-        imageURL,
-        location,
-        approvalStatus,
-        responseStatus,
-      });
-      console.log(`Report Added: ID ${result.id}`);
-    } catch (err) {
-      console.error("Error adding report:", err);
+      const reportPayload = {
+        reporterId: reportData.reporterId,
+        reporterName: reportData.reporterName,
+        title: reportData.title,
+        description: reportData.description,
+        imageURL, // Ensure imageURL is passed to Firestore
+        location: {
+          lat: parseFloat(reportData.locationLat),
+          lng: parseFloat(reportData.locationLng),
+        },
+        approvalStatus: reportData.approvalStatus,
+        responseStatus: reportData.responseStatus,
+      };
+
+      await addReport(reportPayload);
+      alert("Report added successfully!");
+    } catch (error) {
+      console.error("Error adding report:", error);
+      alert("Failed to add report.");
     }
   }
 
@@ -165,26 +170,31 @@ function TestPage() {
   async function onSubmitAddAnnouncement(event) {
     event.preventDefault();
     try {
-      const { userId, title, description, locationLat, locationLng, startTime, endTime, geopoints } = announcementData;
-      const location =
-        locationLat && locationLng
-          ? { lat: parseFloat(locationLat), lng: parseFloat(locationLng) }
-          : null;
+      const imageURL = announcementData.imageFile
+        ? await getAnnouncementImageURL(announcementData.imageFile)
+        : null;
 
-      const parsedGeopoints = geopoints.map(({ lat, lng }) => new GeoPoint(lat, lng));
+      const geopoints = announcementData.geopoints.map(({ lat, lng }) => new GeoPoint(lat, lng));
 
-      const result = await addAnnouncement({
-        userId,
-        title,
-        description,
-        location,
-        startTime,
-        endTime,
-        geopoints: parsedGeopoints,
-      });
-      console.log(`Announcement Added: ID ${result.id}`);
-    } catch (err) {
-      console.error("Error adding announcement:", err);
+      const announcementPayload = {
+        userId: announcementData.userId,
+        title: announcementData.title,
+        description: announcementData.description,
+        imageUrl: imageURL, // Correctly include imageUrl in Firestore payload
+        location: {
+          lat: parseFloat(announcementData.locationLat),
+          lng: parseFloat(announcementData.locationLng),
+        },
+        startTime: announcementData.startTime,
+        endTime: announcementData.endTime,
+        geopoints,
+      };
+
+      await addAnnouncement(announcementPayload);
+      alert("Announcement added successfully!");
+    } catch (error) {
+      console.error("Error adding announcement:", error);
+      alert("Failed to add announcement.");
     }
   }
 
@@ -307,13 +317,16 @@ function TestPage() {
           onChange={(e) => setReportData({ ...reportData, description: e.target.value })}
           placeholder="Description"
         ></textarea>
-        <label>Image URL</label>
-        <input
-          type="url"
-          value={reportData.imageURL}
-          onChange={(e) => setReportData({ ...reportData, imageURL: e.target.value })}
-          placeholder="Image URL"
-        />
+        <label>
+          Image File:
+          <input
+            type="file"
+            accept="image/jpeg, image/png"
+            onChange={(e) =>
+              setReportData({ ...reportData, imageFile: e.target.files[0] })
+            }
+          />
+        </label>
         <label>Location Latitude</label>
         <input
           type="number"
@@ -521,6 +534,16 @@ function TestPage() {
           onChange={(e) => setAnnouncementData({ ...announcementData, description: e.target.value })}
           placeholder="Description"
         ></textarea>
+        <label>
+          Image File:
+          <input
+            type="file"
+            accept="image/jpeg, image/png"
+            onChange={(e) =>
+              setAnnouncementData({ ...announcementData, imageFile: e.target.files[0] })
+            }
+          />
+        </label>
         <label>Location Latitude</label>
         <input
           type="number"
@@ -549,71 +572,95 @@ function TestPage() {
           value={announcementData.endTime}
           onChange={(e) => setAnnouncementData({ ...announcementData, endTime: e.target.value })}
         />
-        <label>Geolocation Lat 1</label>
+        <label>Geolocation Latitude 1</label>
         <input
           type="number"
           step="any"
           value={announcementData.geopoints[0]?.lat || ""}
           onChange={(e) => {
-            const updatedGeopoints = [...(announcementData.geopoints || [])];
-            updatedGeopoints[0] = { ...updatedGeopoints[0], lat: parseFloat(e.target.value) };
+            const updatedGeopoints = [...announcementData.geopoints];
+            updatedGeopoints[0] = {
+              ...updatedGeopoints[0],
+              lat: parseFloat(e.target.value),
+            };
             setAnnouncementData({ ...announcementData, geopoints: updatedGeopoints });
           }}
+          placeholder="Latitude 1"
         />
-        <label>Geolocation Lng 1</label>
+        <label>Geolocation Longitude 1</label>
         <input
           type="number"
           step="any"
           value={announcementData.geopoints[0]?.lng || ""}
           onChange={(e) => {
-            const updatedGeopoints = [...(announcementData.geopoints || [])];
-            updatedGeopoints[0] = { ...updatedGeopoints[0], lng: parseFloat(e.target.value) };
+            const updatedGeopoints = [...announcementData.geopoints];
+            updatedGeopoints[0] = {
+              ...updatedGeopoints[0],
+              lng: parseFloat(e.target.value),
+            };
             setAnnouncementData({ ...announcementData, geopoints: updatedGeopoints });
           }}
+          placeholder="Longitude 1"
         />
-        <label>Geolocation Lat 2</label>
+        <label>Geolocation Latitude 2</label>
         <input
           type="number"
           step="any"
           value={announcementData.geopoints[1]?.lat || ""}
           onChange={(e) => {
-            const updatedGeopoints = [...(announcementData.geopoints || [])];
-            updatedGeopoints[1] = { ...updatedGeopoints[1], lat: parseFloat(e.target.value) };
+            const updatedGeopoints = [...announcementData.geopoints];
+            updatedGeopoints[1] = {
+              ...updatedGeopoints[1],
+              lat: parseFloat(e.target.value),
+            };
             setAnnouncementData({ ...announcementData, geopoints: updatedGeopoints });
           }}
+          placeholder="Latitude 2"
         />
-        <label>Geolocation Lng 2</label>
+        <label>Geolocation Longitude 2</label>
         <input
           type="number"
           step="any"
           value={announcementData.geopoints[1]?.lng || ""}
           onChange={(e) => {
-            const updatedGeopoints = [...(announcementData.geopoints || [])];
-            updatedGeopoints[1] = { ...updatedGeopoints[1], lng: parseFloat(e.target.value) };
+            const updatedGeopoints = [...announcementData.geopoints];
+            updatedGeopoints[1] = {
+              ...updatedGeopoints[1],
+              lng: parseFloat(e.target.value),
+            };
             setAnnouncementData({ ...announcementData, geopoints: updatedGeopoints });
           }}
+          placeholder="Longitude 2"
         />
-        <label>Geolocation Lat 3</label>
+        <label>Geolocation Latitude 3</label>
         <input
           type="number"
           step="any"
           value={announcementData.geopoints[2]?.lat || ""}
           onChange={(e) => {
-            const updatedGeopoints = [...(announcementData.geopoints || [])];
-            updatedGeopoints[2] = { ...updatedGeopoints[2], lat: parseFloat(e.target.value) };
+            const updatedGeopoints = [...announcementData.geopoints];
+            updatedGeopoints[2] = {
+              ...updatedGeopoints[2],
+              lat: parseFloat(e.target.value),
+            };
             setAnnouncementData({ ...announcementData, geopoints: updatedGeopoints });
           }}
+          placeholder="Latitude 3"
         />
-        <label>Geolocation Lng 3</label>
+        <label>Geolocation Longitude 3</label>
         <input
           type="number"
           step="any"
           value={announcementData.geopoints[2]?.lng || ""}
           onChange={(e) => {
-            const updatedGeopoints = [...(announcementData.geopoints || [])];
-            updatedGeopoints[2] = { ...updatedGeopoints[2], lng: parseFloat(e.target.value) };
+            const updatedGeopoints = [...announcementData.geopoints];
+            updatedGeopoints[2] = {
+              ...updatedGeopoints[2],
+              lng: parseFloat(e.target.value),
+            };
             setAnnouncementData({ ...announcementData, geopoints: updatedGeopoints });
           }}
+          placeholder="Longitude 3"
         />
         <input type="submit" value="Add Announcement" />
       </form>
