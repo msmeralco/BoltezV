@@ -47,6 +47,7 @@ function Inventory() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
+  const [isDetectDialogOpen, setIsDetectDialogOpen] = useState(false);
 
   
   const applianceTypes = useMemo(() => {
