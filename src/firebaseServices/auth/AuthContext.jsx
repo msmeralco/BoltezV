@@ -4,6 +4,7 @@ import { auth, googleProvider } from "../firebaseConfig";
 import { doc, setDoc, collection, onSnapshot, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import defaultPfp from "../../assets/default-pfp.png";
+import { GeoPoint } from 'firebase/firestore';
 
 export const AuthContext = createContext({
 	user: null,
@@ -80,7 +81,7 @@ export function AuthProvider({ children }) {
 					let location = null;
 					try {
 						const { latitude, longitude } = await getUserLocation();
-						location = { latitude, longitude };
+						location = new GeoPoint(latitude, longitude); // Convert to Firestore GeoPoint
 					} catch (error) {
 						console.error('Error getting location:', error);
 					}

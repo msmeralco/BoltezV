@@ -2,406 +2,481 @@
   {
     "class_name": "electric_fan",
     "appliance_name": "Electric Fan",
-    "wattage": 75
+    "wattage": 75,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043224/ElectricFan_ofsdel.jpg"
   },
   {
     "class_name": "phone",
     "appliance_name": "Phone",
-    "wattage": 15
+    "wattage": 15,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043239/Phone_gp0opz.jpg"
   },
   {
     "class_name": "laptop",
     "appliance_name": "Laptop",
-    "wattage": 90
+    "wattage": 90,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043233/laptop_uvskwm.jpg"
   },
   {
     "class_name": "air_conditioner",
     "appliance_name": "Air Conditioner",
-    "wattage": 3500
+    "wattage": 3500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043218/aircon_valohg.png"
   },
   {
     "class_name": "washing_machine",
     "appliance_name": "Washing Machine",
-    "wattage": 900
+    "wattage": 900,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043255/washing_machine_xihpyg.jpg"
   },
   {
     "class_name": "air_purifier",
     "appliance_name": "Air Purifier",
-    "wattage": 60
+    "wattage": 60,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043218/air_purifier_o0in1b.png"
   },
   {
     "class_name": "alarm_clock",
     "appliance_name": "Alarm Clock",
-    "wattage": 2
+    "wattage": 2,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043218/alarm_clock_opgdqp.png"
   },
   {
     "class_name": "amplifier",
     "appliance_name": "Amplifier",
-    "wattage": 100
+    "wattage": 100,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043219/amplifier_eplhmc.jpg"
   },
   {
     "class_name": "blender",
     "appliance_name": "Blender",
-    "wattage": 300
+    "wattage": 300,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043219/blender_ep2s6q.jpg"
   },
   {
     "class_name": "boiler",
     "appliance_name": "Boiler",
-    "wattage": 4000
+    "wattage": 4000,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043220/boiler_xdq5qd.png"
   },
   {
     "class_name": "bread_maker",
     "appliance_name": "Bread Maker",
-    "wattage": 600
+    "wattage": 600,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043218/bread_maker_fspm5e.jpg"
   },
   {
     "class_name": "ceiling_fan",
     "appliance_name": "Ceiling Fan",
-    "wattage": 75
+    "wattage": 75,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043218/ceiling_fan_mehyrb.jpg"
   },
   {
     "class_name": "coffee_maker",
     "appliance_name": "Coffee Maker",
-    "wattage": 1000
+    "wattage": 1000,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043219/coffee_maker_uwl1rn.jpg"
   },
   {
     "class_name": "convection_oven",
     "appliance_name": "Convection Oven",
-    "wattage": 2500
+    "wattage": 2500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043220/convection_oven_khdei6.jpg"
   },
   {
     "class_name": "deep_fryer",
     "appliance_name": "Deep Fryer",
-    "wattage": 1400
+    "wattage": 1400,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043220/deepfryer_okly8y.jpg"
   },
   {
     "class_name": "dehumidifier",
     "appliance_name": "Dehumidifier",
-    "wattage": 700
+    "wattage": 700,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043220/dehumidifier_ydsoww.jpg"
   },
   {
     "class_name": "dishwasher",
     "appliance_name": "Dishwasher",
-    "wattage": 1800
-  },
-  {
-    "class_name": "clothes_dryer",
-    "appliance_name": "Clothes Dryer",
-    "wattage": 5000
+    "wattage": 1800,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043220/dishwasher_fsj3gl.jpg"
   },
   {
     "class_name": "electric_blanket",
     "appliance_name": "Electric Blanket",
-    "wattage": 400
+    "wattage": 400,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043224/electricblanket_u25rtj.jpg"
   },
   {
     "class_name": "electric_grill",
     "appliance_name": "Electric Grill",
-    "wattage": 1500
+    "wattage": 1500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043224/electricgrill_pfncri.jpg"
   },
   {
     "class_name": "electric_heater",
     "appliance_name": "Electric Heater",
-    "wattage": 1500
+    "wattage": 1500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043224/electricheater_pup7xv.jpg"
   },
   {
     "class_name": "electric_kettle",
     "appliance_name": "Electric Kettle",
-    "wattage": 1500
+    "wattage": 1500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043223/electric_kettle_yvbdmp.jpg"
   },
   {
     "class_name": "electric_oven_stovetop",
     "appliance_name": "Electric Oven/Stovetop",
-    "wattage": 3000
+    "wattage": 3000,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043225/electricovenstovetop_bbsxol.png"
   },
   {
     "class_name": "electric_towel_rack",
     "appliance_name": "Electric Towel Rack",
-    "wattage": 100
+    "wattage": 100,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043224/electric_towel_rack_qrjcee.png"
   },
   {
     "class_name": "water_heater",
     "appliance_name": "Water Heater",
-    "wattage": 4000
+    "wattage": 4000,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043256/water_heater_ygijmx.jpg"
   },
   {
     "class_name": "espresso_machine",
     "appliance_name": "Espresso Machine",
-    "wattage": 1000
+    "wattage": 1000,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043228/espresso_machine_eb78c1.jpg"
   },
   {
     "class_name": "electric_bike",
     "appliance_name": "Electric Bike",
-    "wattage": 400
+    "wattage": 400,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043221/electric_bike_nstav8.png"
   },
   {
     "class_name": "exhaust_fan",
     "appliance_name": "Exhaust Fan",
-    "wattage": 50
+    "wattage": 50,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043228/exhaust_fan_uyxwcn.jpg"
   },
   {
     "class_name": "fax_machine",
     "appliance_name": "Fax Machine",
-    "wattage": 100
+    "wattage": 100,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043228/fax_machine_vqozjz.jpg"
   },
   {
     "class_name": "floor_lamp",
     "appliance_name": "Floor Lamp",
-    "wattage": 100
+    "wattage": 100,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043229/floorlamp_al5vab.png"
   },
   {
     "class_name": "food_processor",
     "appliance_name": "Food Processor",
-    "wattage": 400
+    "wattage": 400,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043229/foodprocessor_riqnoi.jpg"
   },
   {
     "class_name": "freezer",
     "appliance_name": "Freezer",
-    "wattage": 400
+    "wattage": 400,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043229/freezer_cxllva.jpg"
   },
   {
     "class_name": "hair_dryer",
     "appliance_name": "Hair Dryer",
-    "wattage": 1500
+    "wattage": 1500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043229/hairdryer_folgwj.jpg"
   },
   {
     "class_name": "space_heater",
     "appliance_name": "Space Heater",
-    "wattage": 750
+    "wattage": 750,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043250/space_heater_apdq1b.jpg"
   },
   {
     "class_name": "heat_pump",
     "appliance_name": "Heat Pump",
-    "wattage": 3500
+    "wattage": 3500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043230/heatpump_wlgghs.png"
   },
   {
     "class_name": "humidifier",
     "appliance_name": "Humidifier",
-    "wattage": 100
+    "wattage": 100,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043232/humidifier_cnb6e7.jpg"
   },
   {
     "class_name": "ice_maker",
     "appliance_name": "Ice Maker",
-    "wattage": 300
+    "wattage": 300,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043233/icemachine_hciuex.jpg"
   },
   {
     "class_name": "instant_pot",
     "appliance_name": "Instant Pot",
-    "wattage": 1000
+    "wattage": 1000,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043233/instantpot_m6th9k.jpg"
   },
   {
     "class_name": "iron",
     "appliance_name": "Iron",
-    "wattage": 1200
+    "wattage": 1200,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043233/iron_w6zt77.png"
   },
   {
     "class_name": "light_bulb",
     "appliance_name": "Light Bulb",
-    "wattage": 35
+    "wattage": 35,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043234/lightbulb_q7nyrl.png"
   },
   {
     "class_name": "lawn_mower",
     "appliance_name": "Lawn Mower",
-    "wattage": 1000
+    "wattage": 1000,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043233/lawn_mower_djpbp0.jpg"
   },
   {
     "class_name": "microwave_oven",
     "appliance_name": "Microwave Oven",
-    "wattage": 1000
+    "wattage": 1000,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043234/microwaveoven_gjw1eh.jpg"
   },
   {
     "class_name": "mixer",
     "appliance_name": "Mixer",
-    "wattage": 300
+    "wattage": 300,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043238/mixer_tvqlpt.jpg"
   },
   {
     "class_name": "motorized_wheelchair",
     "appliance_name": "Motorized Wheelchair",
-    "wattage": 200
+    "wattage": 200,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043238/motorizedwheelchair_xonlps.jpg"
   },
   {
     "class_name": "nail_dryer",
     "appliance_name": "Nail Dryer",
-    "wattage": 100
+    "wattage": 100,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043238/naildryer_gxrolj.jpg"
   },
   {
     "class_name": "toaster_oven",
     "appliance_name": "Toaster Oven",
-    "wattage": 1200
+    "wattage": 1200,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043251/toasteroven_tqhsfm.jpg"
   },
   {
     "class_name": "overhead_projector",
     "appliance_name": "Overhead Projector",
-    "wattage": 500
+    "wattage": 500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043238/overhead_projector_ibjodx.jpg"
   },
   {
     "class_name": "paint_sprayer",
     "appliance_name": "Paint Sprayer",
-    "wattage": 1200
+    "wattage": 1200,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043238/paintsprayer_ueltzd.png"
   },
   {
     "class_name": "paper_shredder",
     "appliance_name": "Paper Shredder",
-    "wattage": 400
+    "wattage": 400,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043239/papershredder_xgmrj6.jpg"
   },
   {
     "class_name": "photocopier",
     "appliance_name": "Photocopier",
-    "wattage": 800
+    "wattage": 800,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043239/photocopier_i4iazz.jpg"
   },
   {
     "class_name": "power_drill",
     "appliance_name": "Power Drill",
-    "wattage": 500
+    "wattage": 500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043243/powerdrill_zle6s7.jpg"
   },
   {
     "class_name": "power_saw",
     "appliance_name": "Power Saw",
-    "wattage": 1000
+    "wattage": 1000,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043242/power_saw_q0p2za.jpg"
   },
   {
     "class_name": "printer",
     "appliance_name": "Printer",
-    "wattage": 300
+    "wattage": 300,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043243/printer_tptqed.png"
   },
   {
     "class_name": "projector",
     "appliance_name": "Projector",
-    "wattage": 350
+    "wattage": 350,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043243/projector_f74sot.png"
   },
   {
     "class_name": "radio",
     "appliance_name": "Radio",
-    "wattage": 50
+    "wattage": 50,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043246/radio_ix5fd5.png"
   },
   {
     "class_name": "refrigerator",
     "appliance_name": "Refrigerator",
-    "wattage": 500
+    "wattage": 500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043246/refrigerator_zhdzot.png"
   },
   {
     "class_name": "rice_cooker",
     "appliance_name": "Rice Cooker",
-    "wattage": 800
+    "wattage": 800,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043246/rice_cooker_bc3zsd.jpg"
   },
   {
     "class_name": "router",
     "appliance_name": "Router",
-    "wattage": 15
+    "wattage": 15,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043246/router_unnijs.jpg"
   },
   {
     "class_name": "circular_saw",
     "appliance_name": "Circular Saw",
-    "wattage": 1400
+    "wattage": 1400,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043219/circular_saw_bxo6nk.png"
   },
   {
     "class_name": "scanner",
     "appliance_name": "Scanner",
-    "wattage": 200
+    "wattage": 200,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043247/scanner_mtcy2x.png"
   },
   {
     "class_name": "security_system",
     "appliance_name": "Security System",
-    "wattage": 100
+    "wattage": 100,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043247/security_system_j5eaek.jpg"
   },
   {
     "class_name": "shower_heater",
     "appliance_name": "Shower Heater",
-    "wattage": 2000
+    "wattage": 2000,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043247/shower_heater_qeuwcr.jpg"
   },
   {
     "class_name": "slow_cooker",
     "appliance_name": "Slow Cooker",
-    "wattage": 200
+    "wattage": 200,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043250/slowcooker_wv7pxx.png"
   },
   {
     "class_name": "snowblower",
     "appliance_name": "Snowblower",
-    "wattage": 1500
+    "wattage": 1500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043251/snowblower_mmtdxa.jpg"
   },
   {
     "class_name": "stereo_system",
     "appliance_name": "Stereo System",
-    "wattage": 100
+    "wattage": 100,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043250/stereosystem_csqvfm.png"
   },
   {
     "class_name": "electric_range",
     "appliance_name": "Electric Range",
-    "wattage": 3000
+    "wattage": 3000,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043224/electric_range_jcxv8f.png"
   },
   {
     "class_name": "television",
     "appliance_name": "Television",
-    "wattage": 100
+    "wattage": 100,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043251/television_h0qprs.png"
   },
   {
     "class_name": "tile_saw",
     "appliance_name": "Tile Saw",
-    "wattage": 1500
+    "wattage": 1500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043251/tile_saw_krcm7m.jpg"
   },
   {
     "class_name": "treadmill",
     "appliance_name": "Treadmill",
-    "wattage": 1500
+    "wattage": 1500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043252/treadmill_t1zvtf.png"
   },
   {
     "class_name": "trimmer",
     "appliance_name": "Trimmer",
-    "wattage": 500
+    "wattage": 500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043251/trimmer_dvfiu0.png"
   },
   {
     "class_name": "vacuum_cleaner",
     "appliance_name": "Vacuum Cleaner",
-    "wattage": 750
+    "wattage": 750,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043255/vacuum_cleaner_fkisnh.jpg"
   },
   {
     "class_name": "video_game_console",
     "appliance_name": "Video Game Console",
-    "wattage": 150
+    "wattage": 150,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043255/videogameconsole_fapz3g.jpg"
   },
   {
     "class_name": "water_dispenser",
     "appliance_name": "Water Dispenser",
-    "wattage": 400
+    "wattage": 400,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043256/waterdispenser_cga0or.png"
   },
   {
     "class_name": "welder",
     "appliance_name": "Welder",
-    "wattage": 7000
+    "wattage": 7000,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043257/welder_rmoh8z.jpg"
   },
   {
     "class_name": "wifi_extender",
     "appliance_name": "WiFi Extender",
-    "wattage": 10
+    "wattage": 10,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043257/wifi_extender_fvnriy.jpg"
   },
   {
     "class_name": "wireless_charger",
     "appliance_name": "Wireless Charger",
-    "wattage": 30
+    "wattage": 30,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043257/wireless_charger_sfy3kt.jpg"
   },
   {
     "class_name": "blower",
     "appliance_name": "Blower",
-    "wattage": 400
+    "wattage": 400,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043218/blower_srcu2w.jpg"
   },
   {
     "class_name": "compressor",
     "appliance_name": "Compressor",
-    "wattage": 1500
+    "wattage": 1500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043219/compressor_kh26d0.jpg"
   },
   {
     "class_name": "desktop",
     "appliance_name": "Desktop",
-    "wattage": 300
+    "wattage": 300,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043220/desktop_exlivb.jpg"
   },
   {
     "class_name": "door_bell",
     "appliance_name": "Door Bell",
-    "wattage": 24
+    "wattage": 24,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043221/door_bell_gz8tpj.jpg"
   },
   {
     "class_name": "electric_chainsaw",
     "appliance_name": "Electric Chainsaw",
-    "wattage": 1500
+    "wattage": 1500,
+    "url": "https://res.cloudinary.com/ddr9shttr/image/upload/v1763043222/electric_chainsaw_iehums.jpg"
   }
 ]
