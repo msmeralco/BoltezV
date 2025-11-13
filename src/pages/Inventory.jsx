@@ -9,9 +9,10 @@ import { updateConsumptionSharingPrivacy } from "../firebaseServices/database/us
 import useAuth from "../firebaseServices/auth/useAuth";
 import IoTMonitor from "../components/inventory/IoTMonitor";
 import EditApplianceForm from "../components/inventory/EditApplianceForm";
+import DetectionModal from "../components/inventory/DetectionModal"; // <-- Import the modal
 import { useEffect, useState, useMemo } from "react";
 import { ResponsivePie } from "@nivo/pie";
-import { Settings, Plus } from "lucide-react";
+import { Settings, Plus, Camera } from "lucide-react";
 import styles from "./Inventory.module.css";
 
 function Inventory() {
@@ -43,8 +44,17 @@ function Inventory() {
   const [monitoringApplianceId, setMonitoringApplianceId] = useState(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
+  const [isDetectDialogOpen, setIsDetectDialogOpen] = useState(false);
 
-  const daysOfWeek = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+  const daysOfWeek = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ];
 
   useEffect(() => {
     if (firestoreUser?.consumptionSharingPrivacy) {
@@ -69,15 +79,55 @@ function Inventory() {
     return () => unsubscribe();
   }, [user?.uid]);
 
+  // Pie chart logic with grouping to prevent crashes
   const pieData = useMemo(() => {
     if (!appliances || appliances.length === 0) {
       return [{ id: "No Data", label: "No Data", value: 1, color: "#cccccc" }];
     }
-    return appliances.map((app) => ({
-      id: app.name,
-      label: app.name,
-      value: parseFloat(app.monthlyCost?.toFixed(2) || 0),
+
+    // 1. Aggregate by Name to prevent duplicate IDs
+    const aggregated = appliances.reduce((acc, app) => {
+      const name = app.name || "Unknown";
+      const val = parseFloat(app.monthlyCost?.toFixed(2) || 0);
+      acc[name] = (acc[name] || 0) + val;
+      return acc;
+    }, {});
+
+    // 2. Convert to array
+    let dataArr = Object.entries(aggregated).map(([key, val]) => ({
+      id: key,
+      label: key,
+      value: val,
     }));
+
+    // 3. Handle Case: All values are 0
+    const totalValue = dataArr.reduce((sum, item) => sum + item.value, 0);
+    if (totalValue === 0) {
+      return [
+        { id: "No Usage", label: "No Usage", value: 1, color: "#cccccc" },
+      ];
+    }
+
+    // 4. Sort descending
+    dataArr.sort((a, b) => b.value - a.value);
+
+    // 5. Group into "Others" if > 5 items
+    if (dataArr.length > 5) {
+      const top5 = dataArr.slice(0, 5);
+      const others = dataArr.slice(5);
+      const othersValue = others.reduce((sum, item) => sum + item.value, 0);
+
+      if (othersValue > 0) {
+        top5.push({
+          id: "Others",
+          label: "Others",
+          value: parseFloat(othersValue.toFixed(2)),
+        });
+      }
+      return top5;
+    }
+
+    return dataArr;
   }, [appliances]);
 
   const handleChange = (e) => {
@@ -88,7 +138,11 @@ function Inventory() {
         specificDaysUsed: { ...prevData.specificDaysUsed, [name]: checked },
       }));
     } else if (type === "file") {
-      setFormData((prevData) => ({ ...prevData, imageFile: files[0] }));
+      setFormData((prevData) => ({
+        ...prevData,
+        imageFile: files[0],
+        addedBy: "manual",
+      }));
     } else {
       setFormData((prevData) => ({ ...prevData, [name]: value }));
     }
@@ -108,9 +162,32 @@ function Inventory() {
 
   const handleDaySelection = (preset) => {
     let newDays = { ...formData.specificDaysUsed };
-    const allDays = { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true };
-    const noDays = { monday: false, tuesday: false, wednesday: false, thursday: false, friday: false, saturday: false, sunday: false };
-    const weekdays = { ...noDays, monday: true, tuesday: true, wednesday: true, thursday: true, friday: true };
+    const allDays = {
+      monday: true,
+      tuesday: true,
+      wednesday: true,
+      thursday: true,
+      friday: true,
+      saturday: true,
+      sunday: true,
+    };
+    const noDays = {
+      monday: false,
+      tuesday: false,
+      wednesday: false,
+      thursday: false,
+      friday: false,
+      saturday: false,
+      sunday: false,
+    };
+    const weekdays = {
+      ...noDays,
+      monday: true,
+      tuesday: true,
+      wednesday: true,
+      thursday: true,
+      friday: true,
+    };
     const weekends = { ...noDays, saturday: true, sunday: true };
 
     if (preset === "all") newDays = allDays;
@@ -124,7 +201,9 @@ function Inventory() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const daysPerWeek = Object.values(formData.specificDaysUsed).filter(Boolean).length;
+      const daysPerWeek = Object.values(formData.specificDaysUsed).filter(
+        Boolean
+      ).length;
       let imageUrl = "";
       if (formData.imageFile) {
         imageUrl = await getApplianceImageURL(formData.imageFile);
@@ -139,9 +218,22 @@ function Inventory() {
       };
       await addApplianceToInventory(user.uid, applianceData);
       setFormData({
-        name: "", type: "", wattage: "", hoursPerDay: "",
-        specificDaysUsed: { monday: false, tuesday: false, wednesday: false, thursday: false, friday: false, saturday: false, sunday: false },
-        weeksPerMonth: "", addedBy: "manual", imageFile: null,
+        name: "",
+        type: "",
+        wattage: "",
+        hoursPerDay: "",
+        specificDaysUsed: {
+          monday: false,
+          tuesday: false,
+          wednesday: false,
+          thursday: false,
+          friday: false,
+          saturday: false,
+          sunday: false,
+        },
+        weeksPerMonth: "",
+        addedBy: "manual",
+        imageFile: null,
       });
       setIsAddDialogOpen(false);
     } catch (error) {
@@ -151,11 +243,14 @@ function Inventory() {
   };
 
   const handleRemoveAppliance = async (applianceId) => {
-    if (!window.confirm("Are you sure you want to remove this appliance?")) return;
+    if (!window.confirm("Are you sure you want to remove this appliance?"))
+      return;
     try {
       const result = await removeApplianceFromInventory(user.uid, applianceId);
       if (result.success) {
-        setAppliances((prev) => prev.filter((appliance) => appliance.id !== applianceId));
+        setAppliances((prev) =>
+          prev.filter((appliance) => appliance.id !== applianceId)
+        );
       }
     } catch (error) {
       console.error("Error removing appliance:", error);
@@ -171,7 +266,15 @@ function Inventory() {
       type: appliance.type,
       wattage: appliance.wattage,
       hoursPerDay: appliance.hoursPerDay,
-      specificDaysUsed: appliance.specificDaysUsed || { monday: false, tuesday: false, wednesday: false, thursday: false, friday: false, saturday: false, sunday: false },
+      specificDaysUsed: appliance.specificDaysUsed || {
+        monday: false,
+        tuesday: false,
+        wednesday: false,
+        thursday: false,
+        friday: false,
+        saturday: false,
+        sunday: false,
+      },
       weeksPerMonth: appliance.weeksPerMonth,
     });
   };
@@ -184,7 +287,9 @@ function Inventory() {
   const handleUpdateAppliance = async (e) => {
     e.preventDefault();
     try {
-      const daysPerWeek = Object.values(editFormData.specificDaysUsed).filter(Boolean).length;
+      const daysPerWeek = Object.values(
+        editFormData.specificDaysUsed
+      ).filter(Boolean).length;
       const updateData = {
         ...editFormData,
         wattage: parseFloat(editFormData.wattage),
@@ -224,6 +329,72 @@ function Inventory() {
     });
   };
 
+  // Handles detection data from the child modal
+  const handleDetectionComplete = async (detectionData) => {
+    const { details, originalFile } = detectionData;
+
+    if (details) {
+      const allDays = {
+        monday: true,
+        tuesday: true,
+        wednesday: true,
+        thursday: true,
+        friday: true,
+        saturday: true,
+        sunday: true,
+      };
+
+      try {
+        if (!user?.uid) {
+          throw new Error("User not authenticated.");
+        }
+
+        let imageUrl = "";
+        if (originalFile) {
+          imageUrl = await getApplianceImageURL(originalFile);
+        }
+
+        const applianceData = {
+          name: details.appliance_name || "Detected Appliance",
+          type: details.appliance_name || "Detected Type",
+          wattage: parseFloat(details.wattage) || 0,
+          hoursPerDay: 8,
+          specificDaysUsed: allDays,
+          weeksPerMonth: 4,
+          daysPerWeek: 7,
+          imageUrl: imageUrl,
+          addedBy: "detection",
+        };
+
+        await addApplianceToInventory(user.uid, applianceData);
+
+        // Reset manual form state as a precaution
+        setFormData({
+          name: "",
+          type: "",
+          wattage: "",
+          hoursPerDay: "",
+          specificDaysUsed: {
+            monday: false,
+            tuesday: false,
+            wednesday: false,
+            thursday: false,
+            friday: false,
+            saturday: false,
+            sunday: false,
+          },
+          weeksPerMonth: "",
+          addedBy: "manual",
+          imageFile: null,
+        });
+      } catch (error) {
+        console.error("Error adding detected appliance:", error);
+        alert("Failed to add detected appliance. Please try again.");
+      }
+    }
+    // Modals stay open to allow further detections
+  };
+
   const formatPrivacySetting = (setting) => {
     if (setting === "private") return "Private";
     if (setting === "connectionsOnly") return "Connections Only";
@@ -238,8 +409,24 @@ function Inventory() {
     <div className={styles.inventoryPageContainer}>
       <section className={styles.inventorySection}>
         <h2>Consumption Summary</h2>
-        <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "1.5rem", width: "100%", alignItems: "center" }}>
-          <div style={{ height: "350px", minWidth: "300px", flex: "1 1 60%", boxSizing: "border-box" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: "1.5rem",
+            width: "100%",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              height: "350px",
+              minWidth: "300px",
+              flex: "1 1 60%",
+              boxSizing: "border-box",
+            }}
+          >
             <ResponsivePie
               data={pieData}
               colors={{ scheme: "spectral" }}
@@ -256,21 +443,64 @@ function Inventory() {
               arcLinkLabelsColor={{ from: "color" }}
               arcLabelsSkipAngle={10}
               arcLabelsTextColor={{ from: "color", modifiers: [["darker", 2]] }}
-              legends={[{ anchor: "right", direction: "column", justify: false, translateX: 120, translateY: 0, itemsSpacing: 2, itemWidth: 100, itemHeight: 20, itemTextColor: "#999", itemDirection: "left-to-right", itemOpacity: 1, symbolSize: 18, symbolShape: "circle", effects: [{ on: "hover", style: { itemTextColor: "#000" } }] }]}
+              legends={[
+                {
+                  anchor: "right",
+                  direction: "column",
+                  justify: false,
+                  translateX: 120,
+                  translateY: 0,
+                  itemsSpacing: 2,
+                  itemWidth: 100,
+                  itemHeight: 20,
+                  itemTextColor: "#999",
+                  itemDirection: "left-to-right",
+                  itemOpacity: 1,
+                  symbolSize: 18,
+                  symbolShape: "circle",
+                  effects: [
+                    {
+                      on: "hover",
+                      style: { itemTextColor: "#000" },
+                    },
+                  ],
+                },
+              ]}
             />
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", flex: "1 1 30%", minWidth: "200px", boxSizing: "border-box" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "1rem",
+              flex: "1 1 30%",
+              minWidth: "200px",
+              boxSizing: "border-box",
+            }}
+          >
             <div className={styles.summaryItem}>
               <p>Total Appliances</p>
-              <span>{firestoreUser?.consumptionSummary?.applianceCount ?? 0}</span>
+              <span>
+                {firestoreUser?.consumptionSummary?.applianceCount ?? 0}
+              </span>
             </div>
             <div className={styles.summaryItem}>
               <p>Est. Daily Bill</p>
-              <span>PHP {firestoreUser?.consumptionSummary?.estimatedDailyBill?.toFixed(2) ?? "0.00"}</span>
+              <span>
+                PHP{" "}
+                {firestoreUser?.consumptionSummary?.estimatedDailyBill?.toFixed(
+                  2
+                ) ?? "0.00"}
+              </span>
             </div>
             <div className={styles.summaryItem}>
               <p>Est. Monthly Bill</p>
-              <span>PHP {firestoreUser?.consumptionSummary?.estimatedMonthlyBill?.toFixed(2) ?? "0.00"}</span>
+              <span>
+                PHP{" "}
+                {firestoreUser?.consumptionSummary?.estimatedMonthlyBill?.toFixed(
+                  2
+                ) ?? "0.00"}
+              </span>
             </div>
           </div>
         </div>
@@ -280,10 +510,18 @@ function Inventory() {
         <div className={styles.inventoryHeader}>
           <h2>Your Inventory</h2>
           <div className={styles.inventoryHeaderButtons}>
-            <button className={styles.inventoryHeaderButton} onClick={() => setIsSettingsDialogOpen(true)} title="Sharing Settings">
+            <button
+              className={styles.inventoryHeaderButton}
+              onClick={() => setIsSettingsDialogOpen(true)}
+              title="Sharing Settings"
+            >
               <Settings size={18} />
             </button>
-            <button className={styles.inventoryHeaderButton} onClick={() => setIsAddDialogOpen(true)} title="Add Appliance">
+            <button
+              className={styles.inventoryHeaderButton}
+              onClick={() => setIsAddDialogOpen(true)}
+              title="Add Appliance"
+            >
               <Plus size={18} />
             </button>
           </div>
@@ -303,12 +541,28 @@ function Inventory() {
                   </div>
                 )}
                 <div className={styles.statsGrid}>
-                  <div className={styles.statsItem}><strong>Wattage:</strong> {appliance.wattage}W</div>
-                  <div className={styles.statsItem}><strong>Usage:</strong> {appliance.hoursPerDay} hours/day</div>
-                  <div className={styles.statsItem}><strong>Consumption:</strong> {appliance.kWhPerDay?.toFixed(2)} kWh/day</div>
-                  <div className={styles.statsItem}><strong>Daily Cost:</strong> PHP {appliance.dailyCost?.toFixed(2)}</div>
-                  <div className={styles.statsItem}><strong>Weekly Cost:</strong> PHP {appliance.weeklyCost?.toFixed(2)}</div>
-                  <div className={styles.statsItem}><strong>Monthly Cost:</strong> PHP {appliance.monthlyCost?.toFixed(2)}</div>
+                  <div className={styles.statsItem}>
+                    <strong>Wattage:</strong> {appliance.wattage}W
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Usage:</strong> {appliance.hoursPerDay} hours/day
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Consumption:</strong>{" "}
+                    {appliance.kWhPerDay?.toFixed(2)} kWh/day
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Daily Cost:</strong> PHP{" "}
+                    {appliance.dailyCost?.toFixed(2)}
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Weekly Cost:</strong> PHP{" "}
+                    {appliance.weeklyCost?.toFixed(2)}
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Monthly Cost:</strong> PHP{" "}
+                    {appliance.monthlyCost?.toFixed(2)}
+                  </div>
                 </div>
                 {editingApplianceId === appliance.id && (
                   <EditApplianceForm
@@ -322,28 +576,53 @@ function Inventory() {
                   />
                 )}
                 {monitoringApplianceId === appliance.id && (
-                  <IoTMonitor appliance={appliance} applianceId={appliance.id} allAppliances={appliances} />
+                  <IoTMonitor
+                    appliance={appliance}
+                    applianceId={appliance.id}
+                    allAppliances={appliances}
+                  />
                 )}
                 <div className={styles.itemControls}>
-                  <button className={styles.formButton} onClick={() => handleToggleMonitor(appliance.id)} disabled={editingApplianceId === appliance.id}>
-                    {monitoringApplianceId === appliance.id ? "Hide Monitor" : "Monitor Device"}
+                  <button
+                    className={styles.formButton}
+                    onClick={() => handleToggleMonitor(appliance.id)}
+                    disabled={editingApplianceId === appliance.id}
+                  >
+                    {monitoringApplianceId === appliance.id
+                      ? "Hide Monitor"
+                      : "Monitor Device"}
                   </button>
                   <div className={styles.editRemoveGroup}>
                     {editingApplianceId === appliance.id ? (
                       <>
-                        <button type="button" className={`${styles.formButton} ${styles.buttonDanger}`} onClick={handleCancelEdit}>
+                        <button
+                          type="button"
+                          className={`${styles.formButton} ${styles.buttonDanger}`}
+                          onClick={handleCancelEdit}
+                        >
                           Cancel
                         </button>
-                        <button type="submit" className={styles.formButton} form={`edit-form-${appliance.id}`}>
+                        <button
+                          type="submit"
+                          className={styles.formButton}
+                          form={`edit-form-${appliance.id}`}
+                        >
                           Save Changes
                         </button>
                       </>
                     ) : (
                       <>
-                        <button className={styles.formButton} onClick={() => handleEditAppliance(appliance)} disabled={monitoringApplianceId === appliance.id}>
+                        <button
+                          className={styles.formButton}
+                          onClick={() => handleEditAppliance(appliance)}
+                          disabled={monitoringApplianceId === appliance.id}
+                        >
                           Edit
                         </button>
-                        <button className={`${styles.formButton} ${styles.buttonDanger}`} onClick={() => handleRemoveAppliance(appliance.id)}>
+                        <button
+                          className={`${styles.formButton} ${styles.buttonDanger}`}
+                          onClick={() => handleRemoveAppliance(appliance.id)}
+                        >
                           Remove
                         </button>
                       </>
@@ -354,25 +633,51 @@ function Inventory() {
             ))}
           </div>
         ) : (
-          <p>You have no appliances in your inventory. Add one to start tracking!</p>
+          <p>
+            You have no appliances in your inventory. Add one to start tracking!
+          </p>
         )}
       </section>
 
       {isSettingsDialogOpen && (
-        <div className={styles.dialogBackdrop} onClick={() => setIsSettingsDialogOpen(false)}>
-          <div className={styles.dialogContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.dialogClose} onClick={() => setIsSettingsDialogOpen(false)}>
+        <div
+          className={styles.dialogBackdrop}
+          onClick={() => setIsSettingsDialogOpen(false)}
+        >
+          <div
+            className={styles.dialogContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className={styles.dialogClose}
+              onClick={() => setIsSettingsDialogOpen(false)}
+            >
               &times;
             </button>
             <h2 className={styles.dialogTitle}>Sharing Settings</h2>
-            <form className={styles.sharingForm} onSubmit={handlePrivacyUpdate}>
+            <form
+              className={styles.sharingForm}
+              onSubmit={handlePrivacyUpdate}
+            >
               <div className={styles.sharingFormLeft}>
                 <p className={styles.sharingCurrentSetting}>
-                  Current Setting: <strong>{formatPrivacySetting(firestoreUser?.consumptionSharingPrivacy)}</strong>
+                  Current Setting:{" "}
+                  <strong>
+                    {formatPrivacySetting(
+                      firestoreUser?.consumptionSharingPrivacy
+                    )}
+                  </strong>
                 </p>
                 <div className={styles.formGroup}>
                   <label htmlFor="privacy-select">Update Privacy</label>
-                  <select id="privacy-select" className={styles.formSelect} name="privacySetting" value={privacySetting} onChange={(e) => setPrivacySetting(e.target.value)} required>
+                  <select
+                    id="privacy-select"
+                    className={styles.formSelect}
+                    name="privacySetting"
+                    value={privacySetting}
+                    onChange={(e) => setPrivacySetting(e.target.value)}
+                    required
+                  >
                     <option value="">Select a setting</option>
                     <option value="private">Private</option>
                     <option value="connectionsOnly">Connections Only</option>
@@ -380,46 +685,144 @@ function Inventory() {
                   </select>
                 </div>
               </div>
-              <button type="submit" className={styles.formButton}>Update Privacy</button>
+              <button type="submit" className={styles.formButton}>
+                Update Privacy
+              </button>
             </form>
           </div>
         </div>
       )}
 
       {isAddDialogOpen && (
-        <div className={styles.dialogBackdrop} onClick={() => setIsAddDialogOpen(false)}>
-          <div className={styles.dialogContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.dialogClose} onClick={() => setIsAddDialogOpen(false)}>&times;</button>
+        <div
+          className={styles.dialogBackdrop}
+          onClick={() => setIsAddDialogOpen(false)}
+        >
+          <div
+            className={styles.dialogContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className={styles.dialogClose}
+              onClick={() => setIsAddDialogOpen(false)}
+            >
+              &times;
+            </button>
             <h2 className={styles.dialogTitle}>Add an Appliance</h2>
             <form onSubmit={handleSubmit} className={styles.addForm}>
+              <button
+                type="button"
+                className={`${styles.formButton} ${styles.span2}`}
+                onClick={() => setIsDetectDialogOpen(true)}
+                style={{
+                  marginBottom: "1rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                }}
+              >
+                <Camera size={18} /> Detect From Image
+              </button>
+
+              <div
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                  margin: "-0.5rem 0 1rem 0",
+                  gridColumn: "span 2",
+                  color: "#888",
+                }}
+              >
+                or add manually
+              </div>
+
               <div className={styles.formGroup}>
                 <label htmlFor="name">Appliance Name</label>
-                <input id="name" className={styles.formInput} type="text" name="name" value={formData.name} onChange={handleChange} required />
+                <input
+                  id="name"
+                  className={styles.formInput}
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div className={styles.formGroup}>
                 <label htmlFor="type">Appliance Type (e.g., Fan, TV)</label>
-                <input id="type" className={styles.formInput} type="text" name="type" value={formData.type} onChange={handleChange} required />
+                <input
+                  id="type"
+                  className={styles.formInput}
+                  type="text"
+                  name="type"
+                  value={formData.type}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div className={styles.formGroup}>
                 <label htmlFor="wattage">Wattage (W)</label>
-                <input id="wattage" className={styles.formInput} type="number" name="wattage" value={formData.wattage} onChange={handleChange} required />
+                <input
+                  id="wattage"
+                  className={styles.formInput}
+                  type="number"
+                  name="wattage"
+                  value={formData.wattage}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div className={styles.formGroup}>
                 <label htmlFor="hoursPerDay">Hours Used Per Day</label>
-                <input id="hoursPerDay" className={styles.formInput} type="number" step="0.1" name="hoursPerDay" value={formData.hoursPerDay} onChange={handleChange} required />
+                <input
+                  id="hoursPerDay"
+                  className={styles.formInput}
+                  type="number"
+                  step="0.1"
+                  name="hoursPerDay"
+                  value={formData.hoursPerDay}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <fieldset className={styles.span2}>
                 <legend>Specific Days Used</legend>
                 <div className={styles.daySelectorButtons}>
-                  <button type="button" onClick={() => handleDaySelection("all")}>Select All</button>
-                  <button type="button" onClick={() => handleDaySelection("none")}>Clear All</button>
-                  <button type="button" onClick={() => handleDaySelection("weekdays")}>Weekdays</button>
-                  <button type="button" onClick={() => handleDaySelection("weekends")}>Weekends</button>
+                  <button
+                    type="button"
+                    onClick={() => handleDaySelection("all")}
+                  >
+                    Select All
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDaySelection("none")}
+                  >
+                    Clear All
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDaySelection("weekdays")}
+                  >
+                    Weekdays
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDaySelection("weekends")}
+                  >
+                    Weekends
+                  </button>
                 </div>
                 <div className={styles.daySelectorCheckboxes}>
                   {daysOfWeek.map((day) => (
                     <label key={day}>
-                      <input type="checkbox" name={day} checked={formData.specificDaysUsed[day]} onChange={handleChange} />
+                      <input
+                        type="checkbox"
+                        name={day}
+                        checked={formData.specificDaysUsed[day]}
+                        onChange={handleChange}
+                      />
                       {day.charAt(0).toUpperCase() + day.slice(1)}
                     </label>
                   ))}
@@ -427,16 +830,55 @@ function Inventory() {
               </fieldset>
               <div className={styles.formGroup}>
                 <label htmlFor="weeksPerMonth">Weeks Used Per Month</label>
-                <input id="weeksPerMonth" className={styles.formInput} type="number" name="weeksPerMonth" value={formData.weeksPerMonth} onChange={handleChange} required min="1" max="4" />
+                <input
+                  id="weeksPerMonth"
+                  className={styles.formInput}
+                  type="number"
+                  name="weeksPerMonth"
+                  value={formData.weeksPerMonth}
+                  onChange={handleChange}
+                  required
+                  min="1"
+                  max="4"
+                />
               </div>
               <div className={`${styles.formGroup} ${styles.span2}`}>
                 <label htmlFor="imageFile">Upload Image (Optional)</label>
-                <input id="imageFile" className={styles.formInput} type="file" name="imageFile" accept="image/jpeg, image/png" onChange={handleChange} />
+                <input
+                  id="imageFile"
+                  className={styles.formInput}
+                  type="file"
+                  name="imageFile"
+                  accept="image/jpeg, image/png"
+                  onChange={handleChange}
+                />
+                {formData.imageFile && formData.addedBy === "detection" && (
+                  <div className={styles.previewDetectedImage}>
+                    <p>Detected Image:</p>
+                    <img
+                      src={URL.createObjectURL(formData.imageFile)}
+                      alt="Detected appliance"
+                    />
+                  </div>
+                )}
               </div>
-              <button type="submit" className={`${styles.formButton} ${styles.span2}`}>Add Appliance</button>
+              <button
+                type="submit"
+                className={`${styles.formButton} ${styles.span2}`}
+              >
+                Add Appliance
+              </button>
             </form>
           </div>
         </div>
+      )}
+
+      {/* Render the Detection Modal when state is true */}
+      {isDetectDialogOpen && (
+        <DetectionModal
+          onClose={() => setIsDetectDialogOpen(false)}
+          onDetect={handleDetectionComplete}
+        />
       )}
     </div>
   );
