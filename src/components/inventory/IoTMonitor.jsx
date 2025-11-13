@@ -23,6 +23,7 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
     const [editingSocketName, setEditingSocketName] = useState(false);
     const [newSocketName, setNewSocketName] = useState('');
     
+    // Client-side state for wattage and usage tracking
     const [clientWattage, setClientWattage] = useState(0);
     const [clientDailyUsage, setClientDailyUsage] = useState(0);
     const [clientMonthlyUsage, setClientMonthlyUsage] = useState(0);
@@ -34,6 +35,18 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
     const usageIntervalRef = useRef(null);
     const autoOffIntervalRef = useRef(null);
 
+    // Reset
+    const resetClientState = () => {
+        setClientWattage(0);
+        setClientDailyUsage(0);
+        setClientMonthlyUsage(0);
+        const now = Date.now();
+        setClientDailyReset(now);
+        setClientMonthlyReset(now);
+        setLastSyncTime(now);
+    }
+
+    // Listen to real-time appliance updates
     useEffect(() => {
         if (!user || !applianceId) return;
 
@@ -43,7 +56,8 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
             (data) => {
                 if (data) {
                     setApplianceData(data);
-                    // Initialize client state from Firebase only on first load
+                    
+                    // If iotConnection exists, initialize from Firebase
                     if (data.iotConnection) {
                         if (clientDailyUsage === 0 && data.iotConnection.dailyUsageSeconds) {
                             setClientDailyUsage(data.iotConnection.dailyUsageSeconds);
@@ -57,6 +71,14 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
                         if (data.iotConnection.monthlyResetTimestamp) {
                             setClientMonthlyReset(data.iotConnection.monthlyResetTimestamp);
                         }
+                    } else {
+                        // If iotConnection was deleted, reset all client state
+                        setClientWattage(0);
+                        setClientDailyUsage(0);
+                        setClientMonthlyUsage(0);
+                        setClientDailyReset(Date.now());
+                        setClientMonthlyReset(Date.now());
+                        setLastSyncTime(Date.now());
                     }
                 }
             },
@@ -68,14 +90,14 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
         return () => unsubscribe();
     }, [user, applianceId]);
 
-    // Update wattage every second (client side)
-    // Fluctuations
+    // Update wattage every 1 second (client-side only) - deduct 5-15W from base
     useEffect(() => {
         if (applianceData?.iotConnection?.isCurrentlyOn && applianceData?.wattage) {
             const baseWattage = applianceData.wattage;
             
             wattageIntervalRef.current = setInterval(() => {
-                const deduction = Math.floor(Math.random() * 11) + 5;
+                // Generate random deduction between 5 and 15 watts
+                const deduction = Math.floor(Math.random() * 11) + 5; // Random 5-15
                 const actualWattage = baseWattage - deduction;
                 setClientWattage(actualWattage);
             }, 1000);
@@ -182,7 +204,6 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
                         setLastSyncTime(Date.now());
                         await toggleIoTAppliance(user.uid, applianceId, false);
                         await cancelAutoOffTimer(user.uid, applianceId);
-                        alert('Auto-off timer expired. Device turned off.');
                     } catch (error) {
                         console.error('Error auto-turning off device:', error);
                     }
@@ -218,6 +239,9 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
             await connectApplianceToSocket(user.uid, applianceId, socket);
             setShowScanner(false);
             setAvailableSockets([]);
+            
+            // Reset client state to default values on new connection
+            resetClientState();
         } catch (error) {
             console.error('Error connecting socket:', error);
             alert('Failed to connect to socket');
@@ -242,6 +266,7 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
             );
             setLastSyncTime(Date.now());
             await disconnectApplianceFromSocket(user.uid, applianceId);
+            resetClientState();
         } catch (error) {
             console.error('Error disconnecting socket:', error);
             alert('Failed to disconnect socket');
@@ -299,7 +324,6 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
         try {
             await setAutoOffTimer(user.uid, applianceId, minutes);
             setTimerMinutes('');
-            alert(`Timer set for ${minutes} minutes`);
         } catch (error) {
             console.error('Error setting timer:', error);
             alert('Failed to set timer');
@@ -326,7 +350,6 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
             // Cancel the timer
             await cancelAutoOffTimer(user.uid, applianceId);
             
-            alert('Timer cancelled and device turned off.');
         } catch (error) {
             console.error('Error canceling timer:', error);
             alert('Failed to cancel timer');

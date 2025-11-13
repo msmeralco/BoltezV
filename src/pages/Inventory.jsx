@@ -30,7 +30,6 @@ function Inventory() {
   const [editingApplianceId, setEditingApplianceId] = useState(null);
   const [editFormData, setEditFormData] = useState(null);
 
-  // Days of the week in correct order
   const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
   useEffect(() => {

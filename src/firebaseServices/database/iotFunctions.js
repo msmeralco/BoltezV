@@ -1,4 +1,4 @@
-import { doc, updateDoc, onSnapshot, collection, Timestamp } from "firebase/firestore";
+import { doc, updateDoc, onSnapshot, collection, Timestamp, deleteField } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 /**
@@ -118,6 +118,7 @@ export async function renameSocket(userId, applianceId, newName) {
 
 /**
  * Disconnects an appliance from its IoT socket
+ * Completely removes the iotConnection field from Firestore
  * 
  * @param {string} userId - The user's UID
  * @param {string} applianceId - The appliance document ID
@@ -131,28 +132,9 @@ export async function disconnectApplianceFromSocket(userId, applianceId) {
     try {
         const applianceDocRef = doc(db, "users", userId, "inventory", applianceId);
         
+        // Delete the entire iotConnection field from Firestore
         await updateDoc(applianceDocRef, {
-            iotConnection: {
-                connected: false,
-                socketId: null,
-                socketNumber: null,
-                socketName: null,
-                connectedAt: null,
-                actualWattage: 0,
-                isCurrentlyOn: false,
-                dailyUsageSeconds: 0,
-                monthlyUsageSeconds: 0,
-                lastUsageStart: null,
-                dailyResetTimestamp: null,
-                monthlyResetTimestamp: null,
-                lastFirebaseUpdate: null,
-                autoOffTimer: {
-                    enabled: false,
-                    durationMinutes: 0,
-                    startTime: null,
-                    endTime: null
-                }
-            }
+            iotConnection: deleteField()
         });
 
         return {
