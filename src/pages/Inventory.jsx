@@ -1,6 +1,6 @@
-import { listenToUserInventory, addApplianceToInventory, removeApplianceFromInventory, updateUserConsumptionSummary, getApplianceImageURL } from "../firebaseServices/database/inventoryFunctions";
-import { updateConsumptionSharingPrivacy } from "../firebaseServices/database/usersFunctions";
+import { listenToUserInventory, addApplianceToInventory, removeApplianceFromInventory, updateApplianceInInventory, getApplianceImageURL } from "../firebaseServices/database/inventoryFunctions";
 import useAuth from "../firebaseServices/auth/useAuth";
+import IoTMonitor from "../components/inventory/IoTMonitor";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -25,9 +25,13 @@ function Inventory() {
     },
     weeksPerMonth: "",
     addedBy: "manual",
-    imageFile: null, // Updated to include image file
+    imageFile: null,
   });
-  const [privacySetting, setPrivacySetting] = useState(firestoreUser?.consumptionSharingPrivacy || "");
+  const [editingApplianceId, setEditingApplianceId] = useState(null);
+  const [editFormData, setEditFormData] = useState(null);
+
+  // Days of the week in correct order
+  const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
   useEffect(() => {
     if (!user.uid) {
@@ -74,6 +78,24 @@ function Inventory() {
     }
   };
 
+  const handleEditChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    if (type === "checkbox") {
+      setEditFormData((prevData) => ({
+        ...prevData,
+        specificDaysUsed: {
+          ...prevData.specificDaysUsed,
+          [name]: checked,
+        },
+      }));
+    } else {
+      setEditFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -91,7 +113,7 @@ function Inventory() {
         hoursPerDay: parseFloat(formData.hoursPerDay),
         weeksPerMonth: parseInt(formData.weeksPerMonth, 10),
         daysPerWeek,
-        imageUrl, // Include the uploaded image URL
+        imageUrl,
       };
 
       await addApplianceToInventory(user.uid, applianceData);
@@ -111,8 +133,9 @@ function Inventory() {
         },
         weeksPerMonth: "",
         addedBy: "manual",
-        imageFile: null, // Reset image file
+        imageFile: null,
       });
+      alert("Appliance added successfully!");
     } catch (error) {
       console.error("Error adding appliance:", error);
       alert("Failed to add appliance. Please try again.");
@@ -120,10 +143,13 @@ function Inventory() {
   };
 
   const handleRemoveAppliance = async (applianceId) => {
+    if (!window.confirm("Are you sure you want to remove this appliance?")) return;
+
     try {
       const result = await removeApplianceFromInventory(user.uid, applianceId);
       if (result.success) {
         setAppliances((prev) => prev.filter((appliance) => appliance.id !== applianceId));
+        alert("Appliance removed successfully!");
       }
     } catch (error) {
       console.error("Error removing appliance:", error);
@@ -131,14 +157,50 @@ function Inventory() {
     }
   };
 
-  const handlePrivacyUpdate = async (e) => {
+  const handleEditAppliance = (appliance) => {
+    setEditingApplianceId(appliance.id);
+    setEditFormData({
+      name: appliance.name,
+      type: appliance.type,
+      wattage: appliance.wattage,
+      hoursPerDay: appliance.hoursPerDay,
+      specificDaysUsed: appliance.specificDaysUsed || {
+        monday: false,
+        tuesday: false,
+        wednesday: false,
+        thursday: false,
+        friday: false,
+        saturday: false,
+        sunday: false,
+      },
+      weeksPerMonth: appliance.weeksPerMonth,
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingApplianceId(null);
+    setEditFormData(null);
+  };
+
+  const handleUpdateAppliance = async (e) => {
     e.preventDefault();
 
     try {
-      await updateConsumptionSharingPrivacy(user.uid, privacySetting);
+      const updateData = {
+        ...editFormData,
+        wattage: parseFloat(editFormData.wattage),
+        hoursPerDay: parseFloat(editFormData.hoursPerDay),
+        weeksPerMonth: parseInt(editFormData.weeksPerMonth, 10),
+      };
+
+      await updateApplianceInInventory(user.uid, editingApplianceId, updateData);
+      
+      setEditingApplianceId(null);
+      setEditFormData(null);
+      alert("Appliance updated successfully!");
     } catch (error) {
-      console.error("Error updating privacy setting:", error);
-      alert("Failed to update privacy setting. Please try again.");
+      console.error("Error updating appliance:", error);
+      alert("Failed to update appliance. Please try again.");
     }
   };
 
@@ -157,29 +219,120 @@ function Inventory() {
         <ul>
           {appliances.map((appliance) => (
             <li key={appliance.id}>
-              <strong>{appliance.name}</strong> ({appliance.type})
-              <br />
-              {appliance.imageUrl && (
-                <img
-                  src={appliance.imageUrl}
-                  alt={appliance.name}
-                  style={{ height: "300px", width: "auto" }}
-                />
+              {editingApplianceId === appliance.id ? (
+                // Edit Form
+                <form onSubmit={handleUpdateAppliance}>
+                  <h3>Edit Appliance</h3>
+                  
+                  <label>
+                    Name:
+                    <input 
+                      type="text" 
+                      name="name" 
+                      value={editFormData.name} 
+                      onChange={handleEditChange} 
+                      required 
+                    />
+                  </label>
+                  <br />
+                  
+                  <label>
+                    Type:
+                    <input 
+                      type="text" 
+                      name="type" 
+                      value={editFormData.type} 
+                      onChange={handleEditChange} 
+                      required 
+                    />
+                  </label>
+                  <br />
+                  
+                  <label>
+                    Wattage:
+                    <input 
+                      type="number" 
+                      name="wattage" 
+                      value={editFormData.wattage} 
+                      onChange={handleEditChange} 
+                      required 
+                    />
+                  </label>
+                  <br />
+                  
+                  <label>
+                    Hours Per Day:
+                    <input 
+                      type="number" 
+                      step="0.1"
+                      name="hoursPerDay" 
+                      value={editFormData.hoursPerDay} 
+                      onChange={handleEditChange} 
+                      required 
+                    />
+                  </label>
+                  <br />
+                  
+                  <fieldset>
+                    <legend>Specific Days Used:</legend>
+                    {daysOfWeek.map((day) => (
+                      <label key={day}>
+                        <input
+                          type="checkbox"
+                          name={day}
+                          checked={editFormData.specificDaysUsed[day]}
+                          onChange={handleEditChange}
+                        />
+                        {day.charAt(0).toUpperCase() + day.slice(1)}
+                      </label>
+                    ))}
+                  </fieldset>
+                  <br />
+                  
+                  <label>
+                    Weeks Per Month:
+                    <input 
+                      type="number" 
+                      name="weeksPerMonth" 
+                      value={editFormData.weeksPerMonth} 
+                      onChange={handleEditChange} 
+                      required 
+                      min="1"
+                      max="4"
+                    />
+                  </label>
+                  <br />
+                  
+                  <button type="submit">Save Changes</button>
+                  <button type="button" onClick={handleCancelEdit}>Cancel</button>
+                </form>
+              ) : (
+                // Display Mode
+                <>
+                  <strong>{appliance.name}</strong> ({appliance.type})
+                  <br />
+                  {appliance.imageUrl && (
+                    <img
+                      src={appliance.imageUrl}
+                      alt={appliance.name}
+                      style={{ height: "300px", width: "auto" }}
+                    />
+                  )}
+                  <p>Wattage: {appliance.wattage}W</p>
+                  <p>Usage: {appliance.hoursPerDay} hours per day</p>
+                  <p>Days per week: {appliance.daysPerWeek}</p>
+                  <p>Weeks per month: {appliance.weeksPerMonth}</p>
+                  <p>Energy Consumption: {appliance.kWhPerDay?.toFixed(2)} kWh/day</p>
+                  <p>Daily Cost: PHP {appliance.dailyCost?.toFixed(2)}</p>
+                  <p>Weekly Cost: PHP {appliance.weeklyCost?.toFixed(2)}</p>
+                  <p>Monthly Cost: PHP {appliance.monthlyCost?.toFixed(2)}</p>
+                  
+                  <IoTMonitor appliance={appliance} applianceId={appliance.id} allAppliances={appliances} />
+                  
+                  <button onClick={() => handleEditAppliance(appliance)}>Edit</button>
+                  <button onClick={() => handleRemoveAppliance(appliance.id)}>Remove</button>
+                </>
               )}
-              <p>Wattage: {appliance.wattage}W</p>
-              <p>Usage: {appliance.hoursPerDay} hours per day</p>
-              <p>Energy Consumption: {appliance.kWhPerDay?.toFixed(2)} kWh/day</p>
-              <p>Daily Cost: PHP {appliance.dailyCost?.toFixed(2)}</p>
-              <p>Weekly Cost: PHP {appliance.weeklyCost?.toFixed(2)}</p>
-              <p>Monthly Cost: PHP {appliance.monthlyCost?.toFixed(2)}</p>
-              <button>Monitor this Device</button>
-              <br />
-              <button>Scan For Sockets</button>
-              <button>Socket 1</button>
-              <button>Socket 2</button>
-              <button>Socket 3</button>
-              <br />
-              <button onClick={() => handleRemoveAppliance(appliance.id)}>Remove</button>
             </li>
           ))}
         </ul>
@@ -195,28 +348,6 @@ function Inventory() {
         <p>Estimated Monthly Bill: PHP {firestoreUser.consumptionSummary.estimatedMonthlyBill.toFixed(2)}</p>
         <p>Top Appliance: {firestoreUser.consumptionSummary.topAppliance}</p>
       </div>
-
-      <h2>Share Your Inventory and Consumption Analysis!</h2>
-      <p>Setting: <strong>{firestoreUser.consumptionSharingPrivacy}</strong></p>
-
-      <form onSubmit={handlePrivacyUpdate}>
-        <label>
-          Privacy Setting:
-          <select
-            name="privacySetting"
-            value={privacySetting}
-            onChange={(e) => setPrivacySetting(e.target.value)}
-            required
-          >
-            <option value="">Select a setting</option>
-            <option value="private">Private</option>
-            <option value="connectionsOnly">Connections Only</option>
-            <option value="public">Public</option>
-          </select>
-        </label>
-        <br />
-        <button type="submit">Update Privacy Setting</button>
-      </form>
 
       <h2>Add an Appliance</h2>
 
@@ -238,12 +369,12 @@ function Inventory() {
         <br />
         <label>
           Hours Per Day:
-          <input type="number" name="hoursPerDay" value={formData.hoursPerDay} onChange={handleChange} required />
+          <input type="number" step="0.1" name="hoursPerDay" value={formData.hoursPerDay} onChange={handleChange} required />
         </label>
         <br />
         <fieldset>
           <legend>Specific Days Used:</legend>
-          {Object.keys(formData.specificDaysUsed).map((day) => (
+          {daysOfWeek.map((day) => (
             <label key={day}>
               <input
                 type="checkbox"
@@ -258,7 +389,7 @@ function Inventory() {
         <br />
         <label>
           Weeks Per Month:
-          <input type="number" name="weeksPerMonth" value={formData.weeksPerMonth} onChange={handleChange} required />
+          <input type="number" name="weeksPerMonth" value={formData.weeksPerMonth} onChange={handleChange} required min="1" max="4" />
         </label>
         <br />
         <label>

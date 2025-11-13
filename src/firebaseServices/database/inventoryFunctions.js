@@ -85,6 +85,62 @@ export async function addApplianceToInventory(userId, applianceData) {
 }
 
 /**
+ * Updates an existing appliance in a user's inventory in Firestore.
+ *
+ * @param {string} userId - The UID of the user whose inventory the appliance belongs to.
+ * @param {string} applianceId - The ID of the appliance to update.
+ * @param {object} updatedData - The updated data for the appliance.
+ * @returns {Promise<object>} - A promise that resolves to an object containing:
+ *   - `success` (boolean): Indicates if the operation was successful.
+ *   - `message` (string): A message confirming the update.
+ *   - `applianceId` (string): The ID of the updated appliance.
+ * @throws {Error} - Throws an error if the operation fails.
+ */
+export async function updateApplianceInInventory(userId, applianceId, updatedData) {
+  if (!userId || !applianceId) {
+    throw new Error("Both userId and applianceId are required to update an appliance in inventory.");
+  }
+
+  if (!updatedData || typeof updatedData !== "object") {
+    throw new Error("Updated data must be a valid object.");
+  }
+
+  try {
+    const applianceDocRef = doc(db, "users", userId, "inventory", applianceId);
+    
+    // Calculate daysPerWeek from specificDaysUsed if provided
+    let updatePayload = { ...updatedData };
+    if (updatedData.specificDaysUsed) {
+      const daysPerWeek = Object.values(updatedData.specificDaysUsed).filter(Boolean).length;
+      updatePayload.daysPerWeek = daysPerWeek;
+    }
+
+    // Recalculate costs and energy consumption
+    const costData = calculateApplianceCost(updatePayload);
+    updatePayload = {
+      ...updatePayload,
+      ...costData,
+      updatedAt: new Date(),
+    };
+
+    await updateDoc(applianceDocRef, updatePayload);
+    
+    // Update consumption summary after editing
+    await updateUserConsumptionSummary(userId);
+
+    console.log(`Appliance ${applianceId} successfully updated.`);
+    return {
+      success: true,
+      message: `Appliance ${applianceId} successfully updated.`,
+      applianceId,
+    };
+  } catch (error) {
+    console.error("Error updating appliance in inventory:", error);
+    throw new Error("Failed to update appliance in inventory.");
+  }
+}
+
+/**
  * Removes an appliance from a user's inventory in Firestore.
  *
  * @param {string} userId - The UID of the user whose inventory the appliance will be removed from.
