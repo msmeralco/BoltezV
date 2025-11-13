@@ -727,3 +727,134 @@ export async function updateUserLocation(userId, geopoint) {
     throw error;
   }
 }
+
+/**
+ * Checks if a report ID exists in a user's upvoted or downvoted collection.
+ *
+ * @param {string} userId - The UID of the user.
+ * @param {string} reportId - The ID of the report to check.
+ * @param {string} voteType - The type of vote to check. Must be "upvoted" or "downvoted".
+ * @returns {Promise<boolean>} - Returns true if the report ID exists in the specified vote collection, false otherwise.
+ * @throws {Error} - Throws an error if parameters are invalid or the operation fails.
+ */
+export async function checkUserReportVote(userId, reportId, voteType) {
+  if (!userId || !reportId) {
+    throw new Error("Both userId and reportId are required.");
+  }
+
+  const validVoteTypes = ["upvoted", "downvoted"];
+  if (!validVoteTypes.includes(voteType)) {
+    throw new Error(`Invalid voteType: ${voteType}. Must be "upvoted" or "downvoted".`);
+  }
+
+  try {
+    const userDocRef = doc(db, "users", userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      throw new Error(`User with ID ${userId} does not exist.`);
+    }
+
+    const userData = userDoc.data();
+    const collectionName = voteType === "upvoted" ? "reportIdsUpvoted" : "reportIdsDownvoted";
+    const votes = userData[collectionName] || {};
+
+    return votes[reportId] === true;
+  } catch (error) {
+    console.error(`Error checking ${voteType} report:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Adds a report ID to a user's upvoted collection and removes it from downvoted if it exists.
+ *
+ * @param {string} userId - The UID of the user.
+ * @param {string} reportId - The ID of the report to upvote.
+ * @returns {Promise<object>} - A promise that resolves to an object containing success status and message.
+ * @throws {Error} - Throws an error if parameters are invalid or the operation fails.
+ */
+export async function addReportIdToUserUpvoted(userId, reportId) {
+  if (!userId || !reportId) {
+    throw new Error("Both userId and reportId are required.");
+  }
+
+  try {
+    const userDocRef = doc(db, "users", userId);
+
+    await updateDoc(userDocRef, {
+      [`reportIdsUpvoted.${reportId}`]: true,
+      [`reportIdsDownvoted.${reportId}`]: deleteField(),
+    });
+
+    return {
+      success: true,
+      message: `Report ${reportId} added to upvoted for user ${userId}.`,
+    };
+  } catch (error) {
+    console.error("Error adding report to upvoted:", error);
+    throw error;
+  }
+}
+
+/**
+ * Adds a report ID to a user's downvoted collection and removes it from upvoted if it exists.
+ *
+ * @param {string} userId - The UID of the user.
+ * @param {string} reportId - The ID of the report to downvote.
+ * @returns {Promise<object>} - A promise that resolves to an object containing success status and message.
+ * @throws {Error} - Throws an error if parameters are invalid or the operation fails.
+ */
+export async function addReportIdToUserDownvoted(userId, reportId) {
+  if (!userId || !reportId) {
+    throw new Error("Both userId and reportId are required.");
+  }
+
+  try {
+    const userDocRef = doc(db, "users", userId);
+
+    await updateDoc(userDocRef, {
+      [`reportIdsDownvoted.${reportId}`]: true,
+      [`reportIdsUpvoted.${reportId}`]: deleteField(),
+    });
+
+    return {
+      success: true,
+      message: `Report ${reportId} added to downvoted for user ${userId}.`,
+    };
+  } catch (error) {
+    console.error("Error adding report to downvoted:", error);
+    throw error;
+  }
+}
+
+/**
+ * Removes a report ID from both upvoted and downvoted collections (removes the user's vote).
+ *
+ * @param {string} userId - The UID of the user.
+ * @param {string} reportId - The ID of the report to remove the vote from.
+ * @returns {Promise<object>} - A promise that resolves to an object containing success status and message.
+ * @throws {Error} - Throws an error if parameters are invalid or the operation fails.
+ */
+export async function removeReportVote(userId, reportId) {
+  if (!userId || !reportId) {
+    throw new Error("Both userId and reportId are required.");
+  }
+
+  try {
+    const userDocRef = doc(db, "users", userId);
+
+    await updateDoc(userDocRef, {
+      [`reportIdsUpvoted.${reportId}`]: deleteField(),
+      [`reportIdsDownvoted.${reportId}`]: deleteField(),
+    });
+
+    return {
+      success: true,
+      message: `Vote removed for report ${reportId} from user ${userId}.`,
+    };
+  } catch (error) {
+    console.error("Error removing report vote:", error);
+    throw error;
+  }
+}

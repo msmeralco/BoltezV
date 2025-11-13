@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getUserByUid, addDummyUserWithInventory, connectTwoUsers, disconnectTwoUsers, sendConnectionRequest } from "../firebaseServices/database/usersFunctions";
+import { getUserByUid, addDummyUserWithInventory, connectTwoUsers, disconnectTwoUsers, sendConnectionRequest, checkUserReportVote, addReportIdToUserUpvoted, addReportIdToUserDownvoted, removeReportVote } from "../firebaseServices/database/usersFunctions";
 import { addReport, getReportImageURL } from "../firebaseServices/database/reportsFunctions";
 import { addOutage } from "../firebaseServices/database/outagesFunctions";
 import { addAnnouncement, getAnnouncementImageURL } from "../firebaseServices/database/announcementsFunctions";
@@ -47,6 +47,12 @@ function TestPage() {
     endTime: "",
     geopoints: [],
   });
+  const [voteTestData, setVoteTestData] = useState({
+    userId: "",
+    reportId: "",
+    voteType: "upvoted",
+  });
+  const [voteCheckResult, setVoteCheckResult] = useState(null);
 
   async function getUser(event) {
     event.preventDefault(); // Prevent form submission from reloading the page
@@ -198,6 +204,67 @@ function TestPage() {
     }
   }
 
+  async function onSubmitCheckReportVote(event) {
+    event.preventDefault();
+    try {
+      const result = await checkUserReportVote(
+        voteTestData.userId,
+        voteTestData.reportId,
+        voteTestData.voteType
+      );
+      setVoteCheckResult(result);
+      console.log(`Report vote check result: ${result}`);
+    } catch (error) {
+      console.error("Error checking report vote:", error);
+      alert(`Error: ${error.message}`);
+    }
+  }
+
+  async function onSubmitAddReportUpvote(event) {
+    event.preventDefault();
+    try {
+      const result = await addReportIdToUserUpvoted(
+        voteTestData.userId,
+        voteTestData.reportId
+      );
+      console.log(result.message);
+      alert(result.message);
+    } catch (error) {
+      console.error("Error adding upvote:", error);
+      alert(`Error: ${error.message}`);
+    }
+  }
+
+  async function onSubmitAddReportDownvote(event) {
+    event.preventDefault();
+    try {
+      const result = await addReportIdToUserDownvoted(
+        voteTestData.userId,
+        voteTestData.reportId
+      );
+      console.log(result.message);
+      alert(result.message);
+    } catch (error) {
+      console.error("Error adding downvote:", error);
+      alert(`Error: ${error.message}`);
+    }
+  }
+
+  async function onSubmitRemoveReportVote(event) {
+    event.preventDefault();
+    try {
+      const result = await removeReportVote(
+        voteTestData.userId,
+        voteTestData.reportId
+      );
+      console.log(result.message);
+      alert(result.message);
+    } catch (error) {
+      console.error("Error removing vote:", error);
+      alert(`Error: ${error.message}`);
+    }
+  }
+
   useEffect(() => {
     if (queryUser) {
       console.log(queryUser); // Log queryUser when it updates
@@ -208,7 +275,7 @@ function TestPage() {
   return (
     <div>
       <h1>Testing Page</h1>
-      <form onSubmit={getUser}>
+        <form onSubmit={getUser}>
         <label>User ID</label>
         <input
           type="text"
@@ -663,6 +730,111 @@ function TestPage() {
           placeholder="Longitude 3"
         />
         <input type="submit" value="Add Announcement" />
+      </form>
+
+      <br />
+      <hr />
+      <br />
+      <h2>Report Vote Testing</h2>
+      
+      <form onSubmit={onSubmitCheckReportVote}>
+        <h3>Check User Report Vote</h3>
+        <label>User ID</label>
+        <input
+          type="text"
+          value={voteTestData.userId}
+          onChange={(e) => setVoteTestData({ ...voteTestData, userId: e.target.value })}
+          placeholder="User ID"
+          required
+        />
+        <label>Report ID</label>
+        <input
+          type="text"
+          value={voteTestData.reportId}
+          onChange={(e) => setVoteTestData({ ...voteTestData, reportId: e.target.value })}
+          placeholder="Report ID (from Firestore)"
+          required
+        />
+        <label>Vote Type</label>
+        <select
+          value={voteTestData.voteType}
+          onChange={(e) => setVoteTestData({ ...voteTestData, voteType: e.target.value })}
+        >
+          <option value="upvoted">Upvoted</option>
+          <option value="downvoted">Downvoted</option>
+        </select>
+        <input type="submit" value="Check Vote" />
+        {voteCheckResult !== null && (
+          <p style={{ fontWeight: 'bold' }}>
+            Result: {voteCheckResult ? "Vote exists ✓" : "Vote does not exist ✗"}
+          </p>
+        )}
+      </form>
+
+      <br />
+      <form onSubmit={onSubmitAddReportUpvote}>
+        <h3>Add Report Upvote</h3>
+        <label>User ID</label>
+        <input
+          type="text"
+          value={voteTestData.userId}
+          onChange={(e) => setVoteTestData({ ...voteTestData, userId: e.target.value })}
+          placeholder="User ID"
+          required
+        />
+        <label>Report ID</label>
+        <input
+          type="text"
+          value={voteTestData.reportId}
+          onChange={(e) => setVoteTestData({ ...voteTestData, reportId: e.target.value })}
+          placeholder="Report ID (from Firestore)"
+          required
+        />
+        <input type="submit" value="Add Upvote" />
+      </form>
+
+      <br />
+      <form onSubmit={onSubmitAddReportDownvote}>
+        <h3>Add Report Downvote</h3>
+        <label>User ID</label>
+        <input
+          type="text"
+          value={voteTestData.userId}
+          onChange={(e) => setVoteTestData({ ...voteTestData, userId: e.target.value })}
+          placeholder="User ID"
+          required
+        />
+        <label>Report ID</label>
+        <input
+          type="text"
+          value={voteTestData.reportId}
+          onChange={(e) => setVoteTestData({ ...voteTestData, reportId: e.target.value })}
+          placeholder="Report ID (from Firestore)"
+          required
+        />
+        <input type="submit" value="Add Downvote" />
+      </form>
+
+      <br />
+      <form onSubmit={onSubmitRemoveReportVote}>
+        <h3>Remove Report Vote</h3>
+        <label>User ID</label>
+        <input
+          type="text"
+          value={voteTestData.userId}
+          onChange={(e) => setVoteTestData({ ...voteTestData, userId: e.target.value })}
+          placeholder="User ID"
+          required
+        />
+        <label>Report ID</label>
+        <input
+          type="text"
+          value={voteTestData.reportId}
+          onChange={(e) => setVoteTestData({ ...voteTestData, reportId: e.target.value })}
+          placeholder="Report ID (from Firestore)"
+          required
+        />
+        <input type="submit" value="Remove Vote" />
       </form>
     </div>
   );
