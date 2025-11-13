@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useAuth from "../auth/useAuth";
 import { db } from "../firebaseConfig";
-import { where, collection, orderBy, addDoc, doc, updateDoc, getDoc, GeoPoint, deleteField, onSnapshot, query, documentId, deleteDoc, getDocs } from "firebase/firestore";
+import { where, collection, orderBy, addDoc, doc, updateDoc, getDoc, setDoc, GeoPoint, deleteField, onSnapshot, query, documentId, deleteDoc, getDocs } from "firebase/firestore";
 
 // Environment Variables
 const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
@@ -66,10 +66,9 @@ export async function addApplianceToInventory(userId, applianceData) {
   const inventoryRef = collection(db, "users", userId, "inventory");
 
   try {
-    // Calculate costs and energy consumption
-    const costData = calculateApplianceCost(applianceData);
+    // ✅ ADD AWAIT
+    const costData = await calculateApplianceCost(applianceData);
 
-    // Merge calculated fields into appliance data
     const applianceDataWithCosts = {
       ...applianceData,
       ...costData,
@@ -77,7 +76,7 @@ export async function addApplianceToInventory(userId, applianceData) {
 
     const docRef = await addDoc(inventoryRef, applianceDataWithCosts);
     updateUserConsumptionSummary(userId);
-    return { id: docRef.id, ...applianceDataWithCosts }; // Return the added appliance's ID and data
+    return { id: docRef.id, ...applianceDataWithCosts };
   } catch (err) {
     console.error("Error adding appliance to inventory:", err);
     throw new Error("Failed to add appliance to inventory.");
@@ -108,15 +107,14 @@ export async function updateApplianceInInventory(userId, applianceId, updatedDat
   try {
     const applianceDocRef = doc(db, "users", userId, "inventory", applianceId);
     
-    // Calculate daysPerWeek from specificDaysUsed if provided
     let updatePayload = { ...updatedData };
     if (updatedData.specificDaysUsed) {
       const daysPerWeek = Object.values(updatedData.specificDaysUsed).filter(Boolean).length;
       updatePayload.daysPerWeek = daysPerWeek;
     }
 
-    // Recalculate costs and energy consumption
-    const costData = calculateApplianceCost(updatePayload);
+    // ✅ ADD AWAIT
+    const costData = await calculateApplianceCost(updatePayload);
     updatePayload = {
       ...updatePayload,
       ...costData,
@@ -124,8 +122,6 @@ export async function updateApplianceInInventory(userId, applianceId, updatedDat
     };
 
     await updateDoc(applianceDocRef, updatePayload);
-    
-    // Update consumption summary after editing
     await updateUserConsumptionSummary(userId);
 
     console.log(`Appliance ${applianceId} successfully updated.`);
@@ -173,6 +169,65 @@ export async function removeApplianceFromInventory(userId, applianceId) {
 }
 
 /**
+ * Fetches the current Meralco rate from the API or Firebase cache.
+ * Updates the cached rate if it's a new month.
+ * 
+ * The function checks if a cached rate exists for the current month in Firebase.
+ * If not, it fetches a fresh rate from the Meralco Rate API and caches it.
+ * This ensures the rate is automatically updated at the start of each month.
+ * 
+ * @returns {Promise<number>} - The current Meralco rate in PHP per kWh
+ * @throws {Error} - Falls back to default rate (13.4702) if API fetch fails
+ */
+
+export async function getMeralcoRate() {
+  const rateDocRef = doc(db, "settings", "meralcoRate");
+  
+  try {
+    // Get cached rate from Firebase
+    const rateDoc = await getDoc(rateDocRef);
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    
+    // Check if we have a cached rate for the current month
+    if (rateDoc.exists()) {
+      const data = rateDoc.data();
+      if (data.month === currentMonth && data.rate) {
+        console.log("Using cached Meralco rate:", data.rate);
+        return data.rate;
+      }
+    }
+    
+    // Fetch new rate from API
+    console.log("Fetching new Meralco rate from API...");
+    const response = await fetch("https://meralco-rate-api.onrender.com/rate");
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch Meralco rate: ${response.status}`);
+    }
+    
+    const rateData = await response.json();
+    const newRate = rateData.rate;
+    
+    // Cache the new rate in Firebase (use setDoc to create if doesn't exist)
+    await setDoc(rateDocRef, {
+      rate: newRate,
+      month: currentMonth,
+      lastUpdated: new Date(),
+      source: rateData.source,
+      published: rateData.published,
+    }, { merge: true }); // merge: true will update if exists, create if doesn't
+    
+    console.log("Meralco rate updated:", newRate);
+    return newRate;
+    
+  } catch (error) {
+    console.error("Error fetching Meralco rate, using fallback:", error);
+    return 13.4702;;
+  }
+}
+
+/**
  * Calculates the energy consumption and cost of running an appliance.
  *
  * @param {object} applianceData - The data of the appliance. Must include wattage, hoursPerDay, daysPerWeek, and weeksPerMonth.
@@ -182,8 +237,9 @@ export async function removeApplianceFromInventory(userId, applianceId) {
  *   - `weeklyCost` (number): The cost of running the appliance per week.
  *   - `monthlyCost` (number): The cost of running the appliance per month.
  */
-export function calculateApplianceCost(applianceData) {
-  const MERALCO_RATE = 13.4702; // Meralco rate in PHP per kWh
+
+export async function calculateApplianceCost(applianceData) {
+  const MERALCO_RATE = await getMeralcoRate();
 
   if (!applianceData || typeof applianceData !== "object") {
     throw new Error("Appliance data must be a valid object.");
@@ -196,7 +252,7 @@ export function calculateApplianceCost(applianceData) {
   }
 
   // Calculate kWh per day
-  const kWhPerDay = (wattage * hoursPerDay) / 1000; // Convert watts to kilowatts
+  const kWhPerDay = (wattage * hoursPerDay) / 1000;
 
   // Calculate costs
   const dailyCost = kWhPerDay * MERALCO_RATE;
