@@ -1,0 +1,406 @@
+[
+  {
+    "appliance": "Electric Fan",
+    "wattage": 75
+  },
+  {
+    "appliance": "Phone",
+    "wattage": 15
+  },
+  {
+    "appliance": "Laptop",
+    "wattage": 90
+  },
+  {
+    "appliance": "Air Conditioner",
+    "wattage": 3500
+  },
+  {
+    "appliance": "Washing Machine",
+    "wattage": 900
+  },
+  {
+    "appliance": "Air Purifier",
+    "wattage": 60
+  },
+  {
+    "appliance": "Alarm Clock",
+    "wattage": 2
+  },
+  {
+    "appliance": "Amplifier",
+    "wattage": 100
+  },
+  {
+    "appliance": "Blender",
+    "wattage": 300
+  },
+  {
+    "appliance": "Boiler",
+    "wattage": 4000
+  },
+  {
+    "appliance": "Bread Maker",
+    "wattage": 600
+  },
+  {
+    "appliance": "Ceiling Fan",
+    "wattage": 75
+  },
+  {
+    "appliance": "Coffee Maker",
+    "wattage": 1000
+  },
+  {
+    "appliance": "Convection Oven",
+    "wattage": 2500
+  },
+  {
+    "appliance": "Deep Fryer",
+    "wattage": 1400
+  },
+  {
+    "appliance": "Dehumidifier",
+    "wattage": 700
+  },
+  {
+    "appliance": "Dishwasher",
+    "wattage": 1800
+  },
+  {
+    "appliance": "Clothes Dryer",
+    "wattage": 5000
+  },
+  {
+    "appliance": "Electric Blanket",
+    "wattage": 400
+  },
+  {
+    "appliance": "Electric Grill",
+    "wattage": 1500
+  },
+  {
+    "appliance": "Electric Heater",
+    "wattage": 1500
+  },
+  {
+    "appliance": "Electric Kettle",
+    "wattage": 1500
+  },
+  {
+    "appliance": "Electric Oven/Stovetop",
+    "wattage": 3000
+  },
+  {
+    "appliance": "Electric Towel Rack",
+    "wattage": 100
+  },
+  {
+    "appliance": "Water Heater",
+    "wattage": 4000
+  },
+  {
+    "appliance": "Espresso Machine",
+    "wattage": 1000
+  },
+  {
+    "appliance": "Exercise Bike",
+    "wattage": 100
+  },
+  {
+    "appliance": "Exhaust Fan",
+    "wattage": 50
+  },
+  {
+    "appliance": "Fax Machine",
+    "wattage": 100
+  },
+  {
+    "appliance": "Floor Lamp",
+    "wattage": 100
+  },
+  {
+    "appliance": "Food Processor",
+    "wattage": 400
+  },
+  {
+    "appliance": "Freezer",
+    "wattage": 400
+  },
+  {
+    "appliance": "Garbage Disposal",
+    "wattage": 500
+  },
+  {
+    "appliance": "Gas Grill",
+    "wattage": 50
+  },
+  {
+    "appliance": "Hair Dryer",
+    "wattage": 1500
+  },
+  {
+    "appliance": "Space Heater",
+    "wattage": 750
+  },
+  {
+    "appliance": "Heat Pump",
+    "wattage": 3500
+  },
+  {
+    "appliance": "Humidifier",
+    "wattage": 100
+  },
+  {
+    "appliance": "Ice Maker",
+    "wattage": 300
+  },
+  {
+    "appliance": "Instant Pot",
+    "wattage": 1000
+  },
+  {
+    "appliance": "Iron",
+    "wattage": 1200
+  },
+  {
+    "appliance": "Hot Tub",
+    "wattage": 4000
+  },
+  {
+    "appliance": "Kettle",
+    "wattage": 1500
+  },
+  {
+    "appliance": "Light Bulb",
+    "wattage": 35
+  },
+  {
+    "appliance": "Lawn Mower",
+    "wattage": 1000
+  },
+  {
+    "appliance": "Microwave Oven",
+    "wattage": 1000
+  },
+  {
+    "appliance": "Mixer",
+    "wattage": 300
+  },
+  {
+    "appliance": "Motorized Wheelchair",
+    "wattage": 200
+  },
+  {
+    "appliance": "Nail Dryer",
+    "wattage": 100
+  },
+  {
+    "appliance": "Toaster Oven",
+    "wattage": 1200
+  },
+  {
+    "appliance": "Overhead Projector",
+    "wattage": 500
+  },
+  {
+    "appliance": "Paint Sprayer",
+    "wattage": 1200
+  },
+  {
+    "appliance": "Paper Shredder",
+    "wattage": 400
+  },
+  {
+    "appliance": "Photocopier",
+    "wattage": 800
+  },
+  {
+    "appliance": "Popcorn Maker",
+    "wattage": 600
+  },
+  {
+    "appliance": "Pool Pump",
+    "wattage": 1500
+  },
+  {
+    "appliance": "Power Drill",
+    "wattage": 500
+  },
+  {
+    "appliance": "Power Saw",
+    "wattage": 1000
+  },
+  {
+    "appliance": "Printer",
+    "wattage": 300
+  },
+  {
+    "appliance": "Projector",
+    "wattage": 350
+  },
+  {
+    "appliance": "Sump Pump",
+    "wattage": 800
+  },
+  {
+    "appliance": "Radio",
+    "wattage": 50
+  },
+  {
+    "appliance": "Refrigerator",
+    "wattage": 500
+  },
+  {
+    "appliance": "Rice Cooker",
+    "wattage": 800
+  },
+  {
+    "appliance": "Router",
+    "wattage": 15
+  },
+  {
+    "appliance": "Sauna",
+    "wattage": 3000
+  },
+  {
+    "appliance": "Circular Saw",
+    "wattage": 1400
+  },
+  {
+    "appliance": "Scanner",
+    "wattage": 200
+  },
+  {
+    "appliance": "Security System",
+    "wattage": 100
+  },
+  {
+    "appliance": "Shower Heater",
+    "wattage": 2000
+  },
+  {
+    "appliance": "Slow Cooker",
+    "wattage": 200
+  },
+  {
+    "appliance": "Smartphone Charger",
+    "wattage": 20
+  },
+  {
+    "appliance": "Snowblower",
+    "wattage": 1500
+  },
+  {
+    "appliance": "Stereo System",
+    "wattage": 100
+  },
+  {
+    "appliance": "Electric Range",
+    "wattage": 3000
+  },
+  {
+    "appliance": "Television",
+    "wattage": 100
+  },
+  {
+    "appliance": "Tile Saw",
+    "wattage": 1500
+  },
+  {
+    "appliance": "Toaster",
+    "wattage": 800
+  },
+  {
+    "appliance": "Treadmill",
+    "wattage": 1500
+  },
+  {
+    "appliance": "Trimmer",
+    "wattage": 500
+  },
+  {
+    "appliance": "Vacuum Cleaner",
+    "wattage": 750
+  },
+  {
+    "appliance": "Video Game Console",
+    "wattage": 150
+  },
+  {
+    "appliance": "Water Cooler",
+    "wattage": 400
+  },
+  {
+    "appliance": "Water Pump",
+    "wattage": 750
+  },
+  {
+    "appliance": "Weather Station",
+    "wattage": 10
+  },
+  {
+    "appliance": "Welder",
+    "wattage": 7000
+  },
+  {
+    "appliance": "Whirlpool Tub",
+    "wattage": 1000
+  },
+  {
+    "appliance": "WiFi Extender",
+    "wattage": 10
+  },
+  {
+    "appliance": "Wine Cooler",
+    "wattage": 300
+  },
+  {
+    "appliance": "Wireless Charger",
+    "wattage": 30
+  },
+  {
+    "appliance": "Blower",
+    "wattage": 400
+  },
+  {
+    "appliance": "Cabinet Heater",
+    "wattage": 250
+  },
+  {
+    "appliance": "Ceiling Light",
+    "wattage": 40
+  },
+  {
+    "appliance": "Coffee Grinder",
+    "wattage": 150
+  },
+  {
+    "appliance": "Compact Fluorescent Lamp",
+    "wattage": 20
+  },
+  {
+    "appliance": "Compressor",
+    "wattage": 1500
+  },
+  {
+    "appliance": "Cooktop",
+    "wattage": 3000
+  },
+  {
+    "appliance": "Desktop Speaker",
+    "wattage": 50
+  },
+  {
+    "appliance": "Digital Thermometer",
+    "wattage": 5
+  },
+  {
+    "appliance": "Door Bell",
+    "wattage": 24
+  },
+  {
+    "appliance": "Electric Chainsaw",
+    "wattage": 1500
+  }
+]
