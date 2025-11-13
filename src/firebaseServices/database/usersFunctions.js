@@ -689,3 +689,41 @@ export async function decrementUserCredibilityScore(userId) {
     throw error;
   }
 }
+
+/**
+ * Updates the `location` field in a user's document.
+ *
+ * @param {string} userId - The UID of the user whose location is to be updated.
+ * @param {GeoPoint} geopoint - The Firestore GeoPoint object containing latitude and longitude.
+ * @returns {Promise<object>} - A promise that resolves to an object containing:
+ *   - `success` (boolean): Indicates if the operation was successful.
+ *   - `message` (string): A message confirming the update.
+ *   - `location` (object): The updated location object with latitude and longitude.
+ * @throws {Error} - Throws an error if the userId or geopoint is invalid, or if the update fails.
+ */
+export async function updateUserLocation(userId, geopoint) {
+  if (!userId) {
+    throw new Error("userId is required to update location.");
+  }
+
+  if (!(geopoint instanceof GeoPoint)) {
+    throw new Error("geopoint must be a valid Firestore GeoPoint object.");
+  }
+
+  try {
+    const userDocRef = doc(db, "users", userId);
+
+    await updateDoc(userDocRef, {
+      location: geopoint,
+    });
+
+    return {
+      success: true,
+      message: `Location updated successfully for user ${userId}.`,
+      location: `[${geopoint.latitude}° N, ${geopoint.longitude}° E]`,
+    };
+  } catch (error) {
+    console.error("Error updating user location:", error);
+    throw error;
+  }
+}

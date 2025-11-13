@@ -58,7 +58,7 @@ export async function addOutage(outageData) {
             geopoints: Array.isArray(geopoints) ? geopoints : [],
             timeCreated: serverTimestamp(),
             approvalStatus: approvalStatus || "pending",
-            responseStatus: responseStatus || "in progress",
+            responseStatus: responseStatus || "not started",
             upvoteCount: 0,
             downvoteCount: 0,
         };

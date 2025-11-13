@@ -63,7 +63,7 @@ export async function addReport(reportData) {
 			location: locationValue,
 			timeCreated: serverTimestamp(),
 			approvalStatus: approvalStatus || "pending",
-			responseStatus: responseStatus || "in progress",
+			responseStatus: responseStatus || "not started",
       upvoteCount: 0,
       downvoteCount: 0,
 		};

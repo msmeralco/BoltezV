@@ -412,19 +412,19 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
                     </div>
                 </div>
                 <button onClick={handleScanForSockets} disabled={loading} className={styles.formButton}>
-                    {loading ? 'Scanning...' : 'Scan for Smart Sockets'}
+                    {loading ? 'Scanning...' : 'Scan for Smart Plugs'}
                 </button>
 
                 {showScanner && (
                     <div className={styles.socketsListContainer}>
-                        <h4>Available Sockets:</h4>
+                        <h4>Available Smart Plugs:</h4>
                         <ul className={styles.socketsList}>
                             {availableSockets.length > 0 ? (
                                 availableSockets.map((socket) => {
                                     const status = getSocketStatus(socket.id);
                                     return (
                                         <li key={socket.id} className={styles.socketItem}>
-                                            <span>Socket {socket.number} - {status}</span>
+                                            <span>Smart Plug {socket.number} - {status}</span>
                                             <button
                                                 onClick={() => handleConnectSocket(socket)}
                                                 disabled={loading || status === 'In Use'}
@@ -437,7 +437,7 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
                                 })
                             ) : (
                                 <li className={styles.socketItem}>
-                                    <span>No sockets found.</span>
+                                    <span>No smart plugs found.</span>
                                 </li>
                             )}
                         </ul>
@@ -459,7 +459,7 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
             </div>
 
             <div className={styles.monitorInfo}>
-                <p>Socket ID: {iotData.socketId} | Socket #{iotData.socketNumber}</p>
+                <p>Smart Plug ID: {iotData.socketId} | Smart Plug #{iotData.socketNumber}</p>
             </div>
 
             <div className={styles.monitorStats}>
@@ -472,7 +472,7 @@ function IoTMonitor({ appliance, applianceId, allAppliances }) {
             <div className={styles.monitorActions}>
                 {!editingSocketName ? (
                     <div className={styles.actionGroup}>
-                        <p>Socket Name: <strong>{iotData.socketName}</strong></p>
+                        <p>Smart Plug Name: <strong>{iotData.socketName}</strong></p>
                         <button onClick={() => {
                             setEditingSocketName(true);
                             setNewSocketName(iotData.socketName);

@@ -99,11 +99,11 @@ function Connections() {
         </button>
       );
     } else if (iSentThemRequest) {
-      return <button className={styles.requestedBtn} disabled>Requested</button>;
+      return <button className={styles.requestedBtn} disabled >Requested</button>;
     } else {
       return (
         <button className={styles.requestBtn} onClick={() => handleSendRequest(nonConnection.id)}>
-          Send Connection Request
+          Send Request
         </button>
       );
     }
@@ -149,10 +149,12 @@ function Connections() {
                 <h2>{connection.displayName}</h2>
                 <p>Email: {connection.email}</p>
                 <div className={styles.connectionsBtn}>
-                  <Link to={`/mappage`}>
-                    <button className={styles.locateMapBtn}>Locate in the map</button>
-                  </Link>
-                  {[("public"), ("networkOnly")].includes(connection.consumptionSharingPrivacy) && (
+                  {[("connectionsOnly"), ("public")].includes(connection.locationSharingPrivacy) && (
+                    <Link to={`/mappage`}>
+                      <button className={styles.locateMapBtn}>Locate in the map</button>
+                    </Link>
+                  )}
+                  {[("public"), ("connectionsOnly")].includes(connection.consumptionSharingPrivacy) && (
                     <>
                       <Link to={`/connections/${connection.id}/inventory`}>
                         <button className={styles.seeInventoryBtn}>See Inventory</button>
@@ -184,39 +186,51 @@ function Connections() {
       <br />
 
       {findConnectionsLoading && (
-        <>
-          <h1>Find Connections</h1>
-
-          {nonConnectionsDetails.length === 0 ? (
-            <p>No users available to connect with.</p>
-          ) : (
-            <div className={styles.connectionList}>
-              {nonConnectionsDetails.map((nonConnection) => (
-                <div className={styles.connectionItem} key={nonConnection.id}>
-                  <div className={styles.connectionImage}>
-                    <img
-                      src={nonConnection.profileImageUrl}
-                      alt={`${nonConnection.displayName}'s profile`}
-                      onError={(e) => {
-                        e.target.src =
-                          "https://placehold.co/100x100/eeeeee/aaaaaa?text=No+Img";
-                      }}
-                    />
-                  </div>
-
-                  <div className={styles.connectionMeta}>
-                    <h2>{nonConnection.displayName}</h2>
-                    <p>Credibility Score: {nonConnection.credibilityScore}</p>
-                  </div>
-
-                  <div className={styles.sendConnectionRequest}>
-                    {getButtonState(nonConnection)}
-                  </div>
-                </div>
-              ))}
+        <div
+          className={styles.modalOverlay}
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setFindConnectionsLoading(false)}
+        >
+          <div className={styles.modalDialog} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2>Find Connections</h2>
+              <button className={styles.modalClose} onClick={() => setFindConnectionsLoading(false)}>Close</button>
             </div>
-          )}
-        </>
+
+            <div className={styles.modalContent}>
+              {nonConnectionsDetails.length === 0 ? (
+                <p>No users available to connect with.</p>
+              ) : (
+                <div className={styles.connectionList}>
+                  {nonConnectionsDetails.map((nonConnection) => (
+                    <div className={styles.connectionItem} key={nonConnection.id}>
+                      <div className={styles.connectionImage}>
+                        <img
+                          src={nonConnection.profileImageUrl}
+                          alt={`${nonConnection.displayName}'s profile`}
+                          onError={(e) => {
+                            e.target.src =
+                              "https://placehold.co/100x100/eeeeee/aaaaaa?text=No+Img";
+                          }}
+                        />
+                      </div>
+
+                      <div className={styles.connectionMeta}>
+                        <h2>{nonConnection.displayName}</h2>
+                        <p>Credibility Score: {nonConnection.credibilityScore}</p>
+                      </div>
+
+                      <div className={styles.sendConnectionRequest}>
+                        {getButtonState(nonConnection)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

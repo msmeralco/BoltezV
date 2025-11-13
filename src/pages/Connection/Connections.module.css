@@ -142,14 +142,17 @@
   color: var(--white);
 }
 
-.connectionActions .requestedBtn {
+.connectionActions .requestedBtn,
+.sendConnectionRequest .requestedBtn,
+.connectionMeta .connectionsBtn .requestedBtn {
+  
   background: #e6e6e6;
   color: #666666;
+  pointer-events: none;
 }
 
 .connectionActions button:hover:not(:disabled),
 .connectionMeta .connectionsBtn button:hover:not(:disabled) {
-  /* small lift + subtle brighten to highlight the button */
   filter: brightness(1.04);
   box-shadow: 0 8px 18px rgba(0,0,0,0.08);
 }
@@ -173,4 +176,58 @@
     justify-content: space-between;
     align-items: center;
   }
+}
+
+/* Modal styles for Find Connections */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 11, 15, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 1.5rem;
+}
+.modalDialog {
+  width: 100%;
+  max-width: 1000px;
+  max-height: 85vh;
+  background: var(--sidebar-bg);
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(2,6,23,0.4);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+}
+.modalHeader h2 {
+  margin: 0;
+  font-family: "Orbitron", sans-serif;
+  font-size: 1.25rem;
+}
+.modalClose {
+  background: transparent;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--sidebar-text-muted);
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+}
+.modalClose:hover { filter: brightness(1.05); }
+.modalContent {
+  padding: 1rem 1.25rem;
+  overflow: auto;
+}
+
+@media (max-width: 640px) {
+  .modalDialog { max-width: 100%; height: 92vh; }
+  .modalHeader h2 { font-size: 1rem; }
 }

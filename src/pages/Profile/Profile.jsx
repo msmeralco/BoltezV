@@ -1,9 +1,21 @@
 import useAuth from "../../firebaseServices/auth/useAuth";
+import { useEffect, useState } from "react";
+import { updateLocationSharingPrivacy, updateConsumptionSharingPrivacy } from "../../firebaseServices/database/usersFunctions";
 import styles from './Profile.module.css';
 
 function Profile() {
-  const { firestoreUser, firestoreLoading, signOut } = useAuth();
+  const { firestoreUser, firestoreLoading, signOut, user } = useAuth();
+  const [locationPrivacy, setLocationPrivacy] = useState("");
+  const [locationUpdateStatus, setLocationUpdateStatus] = useState(null);
+  const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
   
+  useEffect(() => {
+    if (firestoreUser?.locationSharingPrivacy) {
+      setLocationPrivacy(firestoreUser.locationSharingPrivacy);
+    }
+  }, [firestoreUser]);
+
+
   if (firestoreLoading) {
     return <div>Loading...</div>;
   }
@@ -15,7 +27,7 @@ function Profile() {
   const formatTimestamp = (ts) => {
     if (!ts) return "N/A";
     const date = ts.toDate();
-    const timeZone = "Asia/Manila"; // use an IANA zone that is UTC+8
+    const timeZone = "Asia/Manila"; 
     const datePart = new Intl.DateTimeFormat("en-US", {
       month: "long",
       day: "numeric",
@@ -38,6 +50,33 @@ function Profile() {
     const tz = tzNamePart ? tzNamePart.replace("GMT", "UTC") : "UTC+8";
     return `${datePart} at ${timePart} ${tz}`;
   };
+
+
+  const formatPrivacySetting = (setting) => {
+    if (setting === "private") return "Private";
+    if (setting === "connectionsOnly") return "Connections Only";
+    if (setting === "public") return "Public";
+    return "N/A";
+  };
+
+  const handleLocationUpdate = async (e) => {
+    e?.preventDefault();
+    if (!user?.uid) {
+      setLocationUpdateStatus({ success: false, message: "Not authenticated" });
+      return;
+    }
+    try {
+      await updateLocationSharingPrivacy(user.uid, locationPrivacy);
+      setLocationUpdateStatus({ success: true, message: "Location sharing updated." });
+      // close the settings dialog after a short delay so the user can see the success state
+      setTimeout(() => setIsSettingsDialogOpen(false), 300);
+    } catch (err) {
+      console.error(err);
+      setLocationUpdateStatus({ success: false, message: err?.message || "Failed to update." });
+    }
+    // clear status after a short delay
+    setTimeout(() => setLocationUpdateStatus(null), 3000);
+  };
   
 
   return (
@@ -53,19 +92,42 @@ function Profile() {
             <p>Location: GeoPoint({firestoreUser.location?.latitude}, {firestoreUser.location?.longitude})</p>
           ) : <p>Location: No location indicated</p>}
           <p>Consumption Sharing Privacy: {firestoreUser.consumptionSharingPrivacy}</p>
-          <button className={styles.signoutBtn} onClick={signOut}>Sign Out</button>
+          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+            <button className={styles.signoutBtn} onClick={signOut}>Sign Out</button>
+            <button className={styles.signoutBtn} onClick={() => setIsSettingsDialogOpen(true)}>Location Sharing</button>
+          </div>
         </div>
       </div>
       
-      <div className={styles.consumptionInfo}>
-        <p>Consumption Summary</p>
-        <ul>
-          <li>Appliance Count: {firestoreUser.consumptionSummary.applianceCount}</li>
-          <li>Estimated Monthly Bill: {firestoreUser.consumptionSummary.estimatedMonthlyBill}</li>
-          <li>Top Appliance (by Consumption Cost): {firestoreUser.consumptionSummary.topAppliance}</li>
-        </ul>
-        <p className={styles.lastReportTime}>Last Report Time: {formatTimestamp(firestoreUser.lastReportTime)}</p>
-      </div>
+      
+      {isSettingsDialogOpen && (
+        <div className={styles.dialogBackdrop} onClick={() => setIsSettingsDialogOpen(false)}>
+          <div className={styles.dialogContent} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.dialogClose} onClick={() => setIsSettingsDialogOpen(false)}>
+              &times;
+            </button>
+            <h2 className={styles.dialogTitle}>Location Sharing</h2>
+            <form className={styles.sharingForm} onSubmit={handleLocationUpdate}>
+              <div className={styles.sharingFormLeft}>
+                <p className={styles.sharingCurrentSetting}>
+                  Current Setting: <strong>{formatPrivacySetting(firestoreUser?.locationSharingPrivacy)}</strong>
+                </p>
+                <div className={styles.formGroup}>
+                  <label htmlFor="privacy-select">Update Privacy</label>
+                  <select id="privacy-select" className={styles.formSelect} name="privacySetting" value={locationPrivacy} onChange={(e) => setLocationPrivacy(e.target.value)} required>
+                    <option value="">Select a setting</option>
+                    <option value="private">Private</option>
+                    <option value="connectionsOnly">Connections Only</option>
+                    <option value="public">Public</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" className={styles.formButton}>Update Privacy</button>
+            </form>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }

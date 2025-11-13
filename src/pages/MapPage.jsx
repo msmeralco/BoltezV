@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -1129,6 +1129,7 @@ export default function MapPage() {
 
   const handleSetLayer = (layer) => {
     setCurrentLayer(layer);
+    setIsLayerMenuOpen(false);
   };
 
   const handleMarkerClick = (marker) => {
@@ -1137,6 +1138,25 @@ export default function MapPage() {
       map.flyTo(marker.pos, 15);
     }
   };
+  const getModeLabel = (mode) =>
+    ({
+      report: "User Report",
+      hazard: "Hazard/Outage",
+      announcement: "Announcement",
+    }[mode] || "None");
+  const getMarkerDescription = (type) =>
+    ({
+      report: "A user has reported a potential issue in this area.",
+      hazard: "Warning: A confirmed hazard is at this location.",
+      announcement:
+        "An official announcement or maintenance notice is active.",
+    }[type] || "Details for this pin.");
+  const getMarkerHeaderClass = (type) =>
+    ({
+      report: "header-report",
+      hazard: "header-hazard",
+      announcement: "header-announcement",
+    }[type] || "");
 
   const allPolygons = [
     ...allMarkers.report,
@@ -1221,13 +1241,13 @@ export default function MapPage() {
             className="report-cluster-group"
             iconCreateFunction={createCustomClusterIcon("report-cluster-group")}
           >
-            {allMarkers.report.map((marker) => (
+            {reportMarkers.map((marker) => (
               <Marker
                 key={marker.id}
                 position={marker.pos}
                 icon={icons[marker.type]}
                 eventHandlers={{
-                  click: () => handleMarkerClick(marker),
+                  click: () => setSelectedMarker(marker),
                 }}
               />
             ))}
@@ -1237,13 +1257,13 @@ export default function MapPage() {
             className="hazard-cluster-group"
             iconCreateFunction={createCustomClusterIcon("hazard-cluster-group")}
           >
-            {allMarkers.hazard.map((marker) => (
+            {hazardMarkers.map((marker) => (
               <Marker
                 key={marker.id}
                 position={marker.pos}
                 icon={icons[marker.type]}
                 eventHandlers={{
-                  click: () => handleMarkerClick(marker),
+                  click: () => setSelectedMarker(marker),
                 }}
               />
             ))}
@@ -1255,13 +1275,13 @@ export default function MapPage() {
               "announcement-cluster-group"
             )}
           >
-            {allMarkers.announcement.map((marker) => (
+            {announcementMarkers.map((marker) => (
               <Marker
                 key={marker.id}
                 position={marker.pos}
                 icon={icons[marker.type]}
                 eventHandlers={{
-                  click: () => handleMarkerClick(marker),
+                  click: () => setSelectedMarker(marker),
                 }}
               />
             ))}
