@@ -568,3 +568,150 @@ fieldset.span2,
   font-weight: 700;
   color: var(--tertiary-900);
 }
+
+.inventoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--secondary-base);
+  padding-bottom: 0.5rem;
+}
+
+.inventoryHeader h2 {
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+
+.inventoryHeaderButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.inventoryHeaderButton {
+  background-color: var(--secondary-light);
+  color: var(--secondary-darkest);
+  border: 1px solid var(--secondary-base);
+  padding: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.inventoryHeaderButton:hover {
+  background-color: var(--secondary-base);
+  color: var(--secondary-darkest);
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dialogBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.dialogContent {
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  padding: 1.5rem 2rem 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.dialogTitle {
+  font-family: "Orbitron", sans-serif;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  border-bottom: 2px solid var(--secondary-base);
+  padding-bottom: 0.5rem;
+}
+
+.dialogClose {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 1.75rem;
+  font-weight: 300;
+  color: var(--sidebar-text-muted);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.dialogClose:hover {
+  color: var(--sidebar-text);
+}
+
+.dialogContent .addForm {
+  padding-top: 1rem;
+  grid-template-columns: 1fr 1fr;
+}
+
+.dialogContent .sharingForm {
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.sharingFormLeft {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.sharingCurrentSetting {
+  margin: 0;
+  white-space: nowrap;
+  color: var(--sidebar-text-muted);
+}
+
+.sharingCurrentSetting strong {
+  color: var(--sidebar-text);
+  font-weight: 700;
+}
+
+.sharingFormLeft .formGroup {
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.sharingFormLeft .formGroup label {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.dialogContent .sharingForm .formButton {
+  margin: 0;
+}
