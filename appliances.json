@@ -1,406 +1,407 @@
 [
   {
-    "appliance": "Electric Fan",
+    "class_name": "electric_fan",
+    "appliance_name": "Electric Fan",
     "wattage": 75
   },
   {
-    "appliance": "Phone",
+    "class_name": "phone",
+    "appliance_name": "Phone",
     "wattage": 15
   },
   {
-    "appliance": "Laptop",
+    "class_name": "laptop",
+    "appliance_name": "Laptop",
     "wattage": 90
   },
   {
-    "appliance": "Air Conditioner",
+    "class_name": "air_conditioner",
+    "appliance_name": "Air Conditioner",
     "wattage": 3500
   },
   {
-    "appliance": "Washing Machine",
+    "class_name": "washing_machine",
+    "appliance_name": "Washing Machine",
     "wattage": 900
   },
   {
-    "appliance": "Air Purifier",
+    "class_name": "air_purifier",
+    "appliance_name": "Air Purifier",
     "wattage": 60
   },
   {
-    "appliance": "Alarm Clock",
+    "class_name": "alarm_clock",
+    "appliance_name": "Alarm Clock",
     "wattage": 2
   },
   {
-    "appliance": "Amplifier",
+    "class_name": "amplifier",
+    "appliance_name": "Amplifier",
     "wattage": 100
   },
   {
-    "appliance": "Blender",
+    "class_name": "blender",
+    "appliance_name": "Blender",
     "wattage": 300
   },
   {
-    "appliance": "Boiler",
+    "class_name": "boiler",
+    "appliance_name": "Boiler",
     "wattage": 4000
   },
   {
-    "appliance": "Bread Maker",
+    "class_name": "bread_maker",
+    "appliance_name": "Bread Maker",
     "wattage": 600
   },
   {
-    "appliance": "Ceiling Fan",
+    "class_name": "ceiling_fan",
+    "appliance_name": "Ceiling Fan",
     "wattage": 75
   },
   {
-    "appliance": "Coffee Maker",
+    "class_name": "coffee_maker",
+    "appliance_name": "Coffee Maker",
     "wattage": 1000
   },
   {
-    "appliance": "Convection Oven",
+    "class_name": "convection_oven",
+    "appliance_name": "Convection Oven",
     "wattage": 2500
   },
   {
-    "appliance": "Deep Fryer",
+    "class_name": "deep_fryer",
+    "appliance_name": "Deep Fryer",
     "wattage": 1400
   },
   {
-    "appliance": "Dehumidifier",
+    "class_name": "dehumidifier",
+    "appliance_name": "Dehumidifier",
     "wattage": 700
   },
   {
-    "appliance": "Dishwasher",
+    "class_name": "dishwasher",
+    "appliance_name": "Dishwasher",
     "wattage": 1800
   },
   {
-    "appliance": "Clothes Dryer",
+    "class_name": "clothes_dryer",
+    "appliance_name": "Clothes Dryer",
     "wattage": 5000
   },
   {
-    "appliance": "Electric Blanket",
+    "class_name": "electric_blanket",
+    "appliance_name": "Electric Blanket",
     "wattage": 400
   },
   {
-    "appliance": "Electric Grill",
+    "class_name": "electric_grill",
+    "appliance_name": "Electric Grill",
     "wattage": 1500
   },
   {
-    "appliance": "Electric Heater",
+    "class_name": "electric_heater",
+    "appliance_name": "Electric Heater",
     "wattage": 1500
   },
   {
-    "appliance": "Electric Kettle",
+    "class_name": "electric_kettle",
+    "appliance_name": "Electric Kettle",
     "wattage": 1500
   },
   {
-    "appliance": "Electric Oven/Stovetop",
+    "class_name": "electric_oven_stovetop",
+    "appliance_name": "Electric Oven/Stovetop",
     "wattage": 3000
   },
   {
-    "appliance": "Electric Towel Rack",
+    "class_name": "electric_towel_rack",
+    "appliance_name": "Electric Towel Rack",
     "wattage": 100
   },
   {
-    "appliance": "Water Heater",
+    "class_name": "water_heater",
+    "appliance_name": "Water Heater",
     "wattage": 4000
   },
   {
-    "appliance": "Espresso Machine",
+    "class_name": "espresso_machine",
+    "appliance_name": "Espresso Machine",
     "wattage": 1000
   },
   {
-    "appliance": "Exercise Bike",
-    "wattage": 100
-  },
-  {
-    "appliance": "Exhaust Fan",
-    "wattage": 50
-  },
-  {
-    "appliance": "Fax Machine",
-    "wattage": 100
-  },
-  {
-    "appliance": "Floor Lamp",
-    "wattage": 100
-  },
-  {
-    "appliance": "Food Processor",
+    "class_name": "electric_bike",
+    "appliance_name": "Electric Bike",
     "wattage": 400
   },
   {
-    "appliance": "Freezer",
-    "wattage": 400
-  },
-  {
-    "appliance": "Garbage Disposal",
-    "wattage": 500
-  },
-  {
-    "appliance": "Gas Grill",
+    "class_name": "exhaust_fan",
+    "appliance_name": "Exhaust Fan",
     "wattage": 50
   },
   {
-    "appliance": "Hair Dryer",
+    "class_name": "fax_machine",
+    "appliance_name": "Fax Machine",
+    "wattage": 100
+  },
+  {
+    "class_name": "floor_lamp",
+    "appliance_name": "Floor Lamp",
+    "wattage": 100
+  },
+  {
+    "class_name": "food_processor",
+    "appliance_name": "Food Processor",
+    "wattage": 400
+  },
+  {
+    "class_name": "freezer",
+    "appliance_name": "Freezer",
+    "wattage": 400
+  },
+  {
+    "class_name": "hair_dryer",
+    "appliance_name": "Hair Dryer",
     "wattage": 1500
   },
   {
-    "appliance": "Space Heater",
+    "class_name": "space_heater",
+    "appliance_name": "Space Heater",
     "wattage": 750
   },
   {
-    "appliance": "Heat Pump",
+    "class_name": "heat_pump",
+    "appliance_name": "Heat Pump",
     "wattage": 3500
   },
   {
-    "appliance": "Humidifier",
+    "class_name": "humidifier",
+    "appliance_name": "Humidifier",
     "wattage": 100
   },
   {
-    "appliance": "Ice Maker",
+    "class_name": "ice_maker",
+    "appliance_name": "Ice Maker",
     "wattage": 300
   },
   {
-    "appliance": "Instant Pot",
+    "class_name": "instant_pot",
+    "appliance_name": "Instant Pot",
     "wattage": 1000
   },
   {
-    "appliance": "Iron",
+    "class_name": "iron",
+    "appliance_name": "Iron",
     "wattage": 1200
   },
   {
-    "appliance": "Hot Tub",
-    "wattage": 4000
-  },
-  {
-    "appliance": "Kettle",
-    "wattage": 1500
-  },
-  {
-    "appliance": "Light Bulb",
+    "class_name": "light_bulb",
+    "appliance_name": "Light Bulb",
     "wattage": 35
   },
   {
-    "appliance": "Lawn Mower",
+    "class_name": "lawn_mower",
+    "appliance_name": "Lawn Mower",
     "wattage": 1000
   },
   {
-    "appliance": "Microwave Oven",
+    "class_name": "microwave_oven",
+    "appliance_name": "Microwave Oven",
     "wattage": 1000
   },
   {
-    "appliance": "Mixer",
+    "class_name": "mixer",
+    "appliance_name": "Mixer",
     "wattage": 300
   },
   {
-    "appliance": "Motorized Wheelchair",
+    "class_name": "motorized_wheelchair",
+    "appliance_name": "Motorized Wheelchair",
     "wattage": 200
   },
   {
-    "appliance": "Nail Dryer",
+    "class_name": "nail_dryer",
+    "appliance_name": "Nail Dryer",
     "wattage": 100
   },
   {
-    "appliance": "Toaster Oven",
+    "class_name": "toaster_oven",
+    "appliance_name": "Toaster Oven",
     "wattage": 1200
   },
   {
-    "appliance": "Overhead Projector",
+    "class_name": "overhead_projector",
+    "appliance_name": "Overhead Projector",
     "wattage": 500
   },
   {
-    "appliance": "Paint Sprayer",
+    "class_name": "paint_sprayer",
+    "appliance_name": "Paint Sprayer",
     "wattage": 1200
   },
   {
-    "appliance": "Paper Shredder",
+    "class_name": "paper_shredder",
+    "appliance_name": "Paper Shredder",
     "wattage": 400
   },
   {
-    "appliance": "Photocopier",
+    "class_name": "photocopier",
+    "appliance_name": "Photocopier",
     "wattage": 800
   },
   {
-    "appliance": "Popcorn Maker",
-    "wattage": 600
-  },
-  {
-    "appliance": "Pool Pump",
-    "wattage": 1500
-  },
-  {
-    "appliance": "Power Drill",
+    "class_name": "power_drill",
+    "appliance_name": "Power Drill",
     "wattage": 500
   },
   {
-    "appliance": "Power Saw",
+    "class_name": "power_saw",
+    "appliance_name": "Power Saw",
     "wattage": 1000
   },
   {
-    "appliance": "Printer",
+    "class_name": "printer",
+    "appliance_name": "Printer",
     "wattage": 300
   },
   {
-    "appliance": "Projector",
+    "class_name": "projector",
+    "appliance_name": "Projector",
     "wattage": 350
   },
   {
-    "appliance": "Sump Pump",
-    "wattage": 800
-  },
-  {
-    "appliance": "Radio",
+    "class_name": "radio",
+    "appliance_name": "Radio",
     "wattage": 50
   },
   {
-    "appliance": "Refrigerator",
+    "class_name": "refrigerator",
+    "appliance_name": "Refrigerator",
     "wattage": 500
   },
   {
-    "appliance": "Rice Cooker",
+    "class_name": "rice_cooker",
+    "appliance_name": "Rice Cooker",
     "wattage": 800
   },
   {
-    "appliance": "Router",
+    "class_name": "router",
+    "appliance_name": "Router",
     "wattage": 15
   },
   {
-    "appliance": "Sauna",
-    "wattage": 3000
-  },
-  {
-    "appliance": "Circular Saw",
+    "class_name": "circular_saw",
+    "appliance_name": "Circular Saw",
     "wattage": 1400
   },
   {
-    "appliance": "Scanner",
+    "class_name": "scanner",
+    "appliance_name": "Scanner",
     "wattage": 200
   },
   {
-    "appliance": "Security System",
+    "class_name": "security_system",
+    "appliance_name": "Security System",
     "wattage": 100
   },
   {
-    "appliance": "Shower Heater",
+    "class_name": "shower_heater",
+    "appliance_name": "Shower Heater",
     "wattage": 2000
   },
   {
-    "appliance": "Slow Cooker",
+    "class_name": "slow_cooker",
+    "appliance_name": "Slow Cooker",
     "wattage": 200
   },
   {
-    "appliance": "Smartphone Charger",
-    "wattage": 20
-  },
-  {
-    "appliance": "Snowblower",
+    "class_name": "snowblower",
+    "appliance_name": "Snowblower",
     "wattage": 1500
   },
   {
-    "appliance": "Stereo System",
+    "class_name": "stereo_system",
+    "appliance_name": "Stereo System",
     "wattage": 100
   },
   {
-    "appliance": "Electric Range",
+    "class_name": "electric_range",
+    "appliance_name": "Electric Range",
     "wattage": 3000
   },
   {
-    "appliance": "Television",
+    "class_name": "television",
+    "appliance_name": "Television",
     "wattage": 100
   },
   {
-    "appliance": "Tile Saw",
+    "class_name": "tile_saw",
+    "appliance_name": "Tile Saw",
     "wattage": 1500
   },
   {
-    "appliance": "Toaster",
-    "wattage": 800
-  },
-  {
-    "appliance": "Treadmill",
+    "class_name": "treadmill",
+    "appliance_name": "Treadmill",
     "wattage": 1500
   },
   {
-    "appliance": "Trimmer",
+    "class_name": "trimmer",
+    "appliance_name": "Trimmer",
     "wattage": 500
   },
   {
-    "appliance": "Vacuum Cleaner",
+    "class_name": "vacuum_cleaner",
+    "appliance_name": "Vacuum Cleaner",
     "wattage": 750
   },
   {
-    "appliance": "Video Game Console",
+    "class_name": "video_game_console",
+    "appliance_name": "Video Game Console",
     "wattage": 150
   },
   {
-    "appliance": "Water Cooler",
+    "class_name": "water_dispenser",
+    "appliance_name": "Water Dispenser",
     "wattage": 400
   },
   {
-    "appliance": "Water Pump",
-    "wattage": 750
-  },
-  {
-    "appliance": "Weather Station",
-    "wattage": 10
-  },
-  {
-    "appliance": "Welder",
+    "class_name": "welder",
+    "appliance_name": "Welder",
     "wattage": 7000
   },
   {
-    "appliance": "Whirlpool Tub",
-    "wattage": 1000
-  },
-  {
-    "appliance": "WiFi Extender",
+    "class_name": "wifi_extender",
+    "appliance_name": "WiFi Extender",
     "wattage": 10
   },
   {
-    "appliance": "Wine Cooler",
-    "wattage": 300
-  },
-  {
-    "appliance": "Wireless Charger",
+    "class_name": "wireless_charger",
+    "appliance_name": "Wireless Charger",
     "wattage": 30
   },
   {
-    "appliance": "Blower",
+    "class_name": "blower",
+    "appliance_name": "Blower",
     "wattage": 400
   },
   {
-    "appliance": "Cabinet Heater",
-    "wattage": 250
-  },
-  {
-    "appliance": "Ceiling Light",
-    "wattage": 40
-  },
-  {
-    "appliance": "Coffee Grinder",
-    "wattage": 150
-  },
-  {
-    "appliance": "Compact Fluorescent Lamp",
-    "wattage": 20
-  },
-  {
-    "appliance": "Compressor",
+    "class_name": "compressor",
+    "appliance_name": "Compressor",
     "wattage": 1500
   },
   {
-    "appliance": "Cooktop",
-    "wattage": 3000
+    "class_name": "desktop",
+    "appliance_name": "Desktop",
+    "wattage": 300
   },
   {
-    "appliance": "Desktop Speaker",
-    "wattage": 50
-  },
-  {
-    "appliance": "Digital Thermometer",
-    "wattage": 5
-  },
-  {
-    "appliance": "Door Bell",
+    "class_name": "door_bell",
+    "appliance_name": "Door Bell",
     "wattage": 24
   },
   {
-    "appliance": "Electric Chainsaw",
+    "class_name": "electric_chainsaw",
+    "appliance_name": "Electric Chainsaw",
     "wattage": 1500
   }
 ]
