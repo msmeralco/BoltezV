@@ -38,7 +38,7 @@ function NavigationBar() {
 
         {!user && (
           <li className={styles.navItem}>
-            <NavLink to="/login">Log In</NavLink>
+            <NavLink to="/login">Log   In</NavLink>
           </li>
         )}
 
