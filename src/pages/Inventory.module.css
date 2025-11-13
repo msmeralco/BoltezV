@@ -282,7 +282,8 @@ fieldset.span2,
 
 @media (min-width: 768px) {
   .addForm {
-    grid-template-columns: repeat(auto-fit, minmax(50rem, 1fr));
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
     gap: 1.25rem 2rem;
   }
   .applianceItem {

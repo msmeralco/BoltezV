@@ -8,6 +8,7 @@ import {
 import { updateConsumptionSharingPrivacy } from "../firebaseServices/database/usersFunctions";
 import useAuth from "../firebaseServices/auth/useAuth";
 import IoTMonitor from "../components/inventory/IoTMonitor";
+import EditApplianceForm from "../components/inventory/EditApplianceForm";
 import { useEffect, useState } from "react";
 import styles from "./Inventory.module.css";
 
@@ -221,6 +222,7 @@ function Inventory() {
 
   const handleEditAppliance = (appliance) => {
     setEditingApplianceId(appliance.id);
+    setMonitoringApplianceId(null);
     setEditFormData({
       name: appliance.name,
       type: appliance.type,
@@ -285,7 +287,13 @@ function Inventory() {
   };
 
   const handleToggleMonitor = (applianceId) => {
-    setMonitoringApplianceId((prevId) => (prevId === applianceId ? null : applianceId));
+    setMonitoringApplianceId((prevId) => {
+      const newId = prevId === applianceId ? null : applianceId;
+      if (newId) {
+        setEditingApplianceId(null);
+      }
+      return newId;
+    });
   };
 
   if (loading) {
@@ -303,97 +311,69 @@ function Inventory() {
           <div style={{ display: "grid", gap: "1.5rem" }}>
             {appliances.map((appliance) => (
               <div className={styles.applianceItem} key={appliance.id}>
-                {editingApplianceId === appliance.id ? (
-                  <form onSubmit={handleUpdateAppliance} className={styles.addForm}>
-                    <h3 className={styles.span2}>Edit Appliance</h3>
+                <div className={styles.itemHeader}>
+                  <h1>{appliance.name}</h1>
+                  <h6 className={styles.subtitle}>{appliance.type}</h6>
+                </div>
 
-                    <div className={styles.formGroup}>
-                      <label htmlFor={`edit-name-${appliance.id}`}>Name:</label>
-                      <input
-                        id={`edit-name-${appliance.id}`}
-                        className={styles.formInput}
-                        type="text"
-                        name="name"
-                        value={editFormData.name}
-                        onChange={handleEditChange}
-                        required
-                      />
-                    </div>
+                {appliance.imageUrl && (
+                  <div className={styles.itemImageWrapper}>
+                    <img src={appliance.imageUrl} alt={appliance.name} />
+                  </div>
+                )}
 
-                    <div className={styles.formGroup}>
-                      <label htmlFor={`edit-type-${appliance.id}`}>Type:</label>
-                      <input
-                        id={`edit-type-${appliance.id}`}
-                        className={styles.formInput}
-                        type="text"
-                        name="type"
-                        value={editFormData.type}
-                        onChange={handleEditChange}
-                        required
-                      />
-                    </div>
+                <div className={styles.statsGrid}>
+                  <div className={styles.statsItem}>
+                    <strong>Wattage:</strong> {appliance.wattage}W
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Usage:</strong> {appliance.hoursPerDay} hours/day
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Consumption:</strong> {appliance.kWhPerDay?.toFixed(2)} kWh/day
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Daily Cost:</strong> PHP {appliance.dailyCost?.toFixed(2)}
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Weekly Cost:</strong> PHP {appliance.weeklyCost?.toFixed(2)}
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Monthly Cost:</strong> PHP {appliance.monthlyCost?.toFixed(2)}
+                  </div>
+                </div>
 
-                    <div className={styles.formGroup}>
-                      <label htmlFor={`edit-wattage-${appliance.id}`}>Wattage (W):</label>
-                      <input
-                        id={`edit-wattage-${appliance.id}`}
-                        className={styles.formInput}
-                        type="number"
-                        name="wattage"
-                        value={editFormData.wattage}
-                        onChange={handleEditChange}
-                        required
-                      />
-                    </div>
-
-                    <div className={styles.formGroup}>
-                      <label htmlFor={`edit-hours-${appliance.id}`}>Hours Per Day:</label>
-                      <input
-                        id={`edit-hours-${appliance.id}`}
-                        className={styles.formInput}
-                        type="number"
-                        step="0.1"
-                        name="hoursPerDay"
-                        value={editFormData.hoursPerDay}
-                        onChange={handleEditChange}
-                        required
-                      />
-                    </div>
-
-                    <div className={styles.formGroup}>
-                      <label htmlFor={`edit-weeks-${appliance.id}`}>Weeks Per Month:</label>
-                      <input
-                        id={`edit-weeks-${appliance.id}`}
-                        className={styles.formInput}
-                        type="number"
-                        name="weeksPerMonth"
-                        value={editFormData.weeksPerMonth}
-                        onChange={handleEditChange}
-                        required
-                        min="1"
-                        max="4"
-                      />
-                    </div>
-
-                    <fieldset className={styles.span2}>
-                      <legend>Specific Days Used:</legend>
-                      <div className={styles.daySelectorCheckboxes}>
-                        {daysOfWeek.map((day) => (
-                          <label key={day}>
-                            <input
-                              type="checkbox"
-                              name={day}
-                              checked={editFormData.specificDaysUsed[day]}
-                              onChange={handleEditChange}
-                            />
-                            {day.charAt(0).toUpperCase() + day.slice(1)}
-                          </label>
-                        ))}
-                      </div>
-                    </fieldset>
-
-                    <div className={`${styles.itemControls} ${styles.span2} ${styles.justifyEnd}`}>
-                      <div className={styles.editRemoveGroup}>
+                {editingApplianceId === appliance.id && (
+                  <EditApplianceForm
+                    applianceId={appliance.id}
+                    editFormData={editFormData}
+                    handleEditChange={handleEditChange}
+                    handleUpdateAppliance={handleUpdateAppliance}
+                    daysOfWeek={daysOfWeek}
+                    styles={styles}
+                    className={styles.span2}
+                  />
+                )}
+                
+                {monitoringApplianceId === appliance.id && (
+                  <IoTMonitor
+                    appliance={appliance}
+                    applianceId={appliance.id}
+                    allAppliances={appliances}
+                  />
+                )}
+                
+                <div className={styles.itemControls}>
+                  <button
+                    className={styles.formButton}
+                    onClick={() => handleToggleMonitor(appliance.id)}
+                    disabled={editingApplianceId === appliance.id}
+                  >
+                    {monitoringApplianceId === appliance.id ? "Hide Monitor" : "Monitor Device"}
+                  </button>
+                  <div className={styles.editRemoveGroup}>
+                    {editingApplianceId === appliance.id ? (
+                      <>
                         <button
                           type="button"
                           className={`${styles.formButton} ${styles.buttonDanger}`}
@@ -401,65 +381,20 @@ function Inventory() {
                         >
                           Cancel
                         </button>
-                        <button type="submit" className={styles.formButton}>
+                        <button
+                          type="submit"
+                          className={styles.formButton}
+                          form={`edit-form-${appliance.id}`}
+                        >
                           Save Changes
                         </button>
-                      </div>
-                    </div>
-                  </form>
-                ) : (
-                  <>
-                    <div className={styles.itemHeader}>
-                      <h1>{appliance.name}</h1>
-                      <h6 className={styles.subtitle}>{appliance.type}</h6>
-                    </div>
-
-                    {appliance.imageUrl && (
-                      <div className={styles.itemImageWrapper}>
-                        <img src={appliance.imageUrl} alt={appliance.name} />
-                      </div>
-                    )}
-
-                    <div className={styles.statsGrid}>
-                      <div className={styles.statsItem}>
-                        <strong>Wattage:</strong> {appliance.wattage}W
-                      </div>
-                      <div className={styles.statsItem}>
-                        <strong>Usage:</strong> {appliance.hoursPerDay} hours/day
-                      </div>
-                      <div className={styles.statsItem}>
-                        <strong>Consumption:</strong> {appliance.kWhPerDay?.toFixed(2)} kWh/day
-                      </div>
-                      <div className={styles.statsItem}>
-                        <strong>Daily Cost:</strong> PHP {appliance.dailyCost?.toFixed(2)}
-                      </div>
-                      <div className={styles.statsItem}>
-                        <strong>Weekly Cost:</strong> PHP {appliance.weeklyCost?.toFixed(2)}
-                      </div>
-                      <div className={styles.statsItem}>
-                        <strong>Monthly Cost:</strong> PHP {appliance.monthlyCost?.toFixed(2)}
-                      </div>
-                    </div>
-
-                    {monitoringApplianceId === appliance.id && (
-                      <IoTMonitor
-                        appliance={appliance}
-                        applianceId={appliance.id}
-                        allAppliances={appliances}
-                      />
-                    )}
-
-                    <div className={styles.itemControls}>
-                      <button
-                        className={styles.formButton}
-                        onClick={() => handleToggleMonitor(appliance.id)}
-                      >
-                        {monitoringApplianceId === appliance.id ? "Hide Monitor" : "Monitor Device"}
-                      </button>
-                      <div className={styles.editRemoveGroup}>
+                      </>
+                    ) : (
+                      <>
                         <button
                           className={styles.formButton}
                           onClick={() => handleEditAppliance(appliance)}
+                          disabled={monitoringApplianceId === appliance.id}
                         >
                           Edit
                         </button>
@@ -469,10 +404,11 @@ function Inventory() {
                         >
                           Remove
                         </button>
-                      </div>
-                    </div>
-                  </>
-                )}
+                      </>
+                    )}
+                  </div>
+                </div>
+
               </div>
             ))}
           </div>
