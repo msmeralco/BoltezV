@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -34,9 +34,13 @@ import {
   Zap,
   CheckCircle2,
   X,
-  ArrowUp,
-  ArrowDown,
-  Image as ImageIcon,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  Check,
+  XCircle,
+  Edit,
+  House,
+  Award,
 } from "lucide-react";
 
 import {
@@ -49,18 +53,34 @@ import {
   getAllOutages,
   incrementOutageUpvoteCount,
   incrementOutageDownvoteCount,
+  updateOutageApprovalStatus,
 } from "../firebaseServices/database/outagesFunctions";
 import {
   addReport,
   getAllReports,
   incrementReportUpvoteCount,
   incrementReportDownvoteCount,
+  updateReportApprovalStatus,
   getReportImageURL,
 } from "../firebaseServices/database/reportsFunctions";
+import { listenToUserConnections } from "../firebaseServices/database/usersFunctions";
 
 import useAuth from "../firebaseServices/auth/useAuth";
 
 delete L.Icon.Default.prototype._getIconUrl;
+
+const createLucideIcon = (IconComponent, color) => {
+  const iconHtml = ReactDOMServer.renderToString(
+    <IconComponent color={color} size={32} strokeWidth={2} />
+  );
+
+  return new L.DivIcon({
+    html: `<div class="leaflet-lucide-icon-wrapper">${iconHtml}</div>`,
+    className: "leaflet-lucide-icon",
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+  });
+};
 
 const createIcon = (color) => {
   const markerHtml = `<svg viewBox="0 0 32 32" class="marker-svg" style="fill:${color};"><path d="M16 0C10.486 0 6 4.486 6 10c0 5.515 10 22 10 22s10-16.485 10-22C26 4.486 21.514 0 16 0zm0 15c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"/></svg>`;
@@ -152,6 +172,7 @@ const getModeLabel = (mode) =>
     report: "User Report",
     hazard: "Outage/Hazard",
     announcement: "Announcement",
+    connection: "Connection's Location",
   }[mode] || "None");
 
 const initialFormData = {
@@ -170,13 +191,23 @@ function DefaultSidebarPanel() {
         <Zap className="volt-logo" size={32} />
         <h1 className="voltizen-title">Voltizen</h1>
       </div>
-      <p>Uniting Community & Consumption.</p>
-      <p>Click a pin to see details or add your own report.</p>
+      <p className="sidebar-tagline">Uniting Community & Consumption.</p>
+      <p className="sidebar-instruction">
+        Click a pin to see details or add your own report.
+      </p>
     </div>
   );
 }
 
-function MarkerDetailsPanel({ marker, onUpvote, onDownvote }) {
+function MarkerDetailsPanel({
+  marker,
+  onUpvote,
+  onDownvote,
+  currentVote,
+  userRole,
+  onApprove,
+  onReject,
+}) {
   const {
     type,
     title,
@@ -192,6 +223,9 @@ function MarkerDetailsPanel({ marker, onUpvote, onDownvote }) {
     isPlanned,
     startTime,
     endTime,
+    displayName,
+    credibilityScore,
+    profileImageUrl,
   } = marker;
 
   const headerClass =
@@ -199,6 +233,7 @@ function MarkerDetailsPanel({ marker, onUpvote, onDownvote }) {
       report: "header-report",
       hazard: "header-hazard",
       announcement: "header-announcement",
+      connection: "header-connection",
     }[type] || "";
 
   const finalImageUrl = imageURL || imageUrl;
@@ -216,20 +251,29 @@ function MarkerDetailsPanel({ marker, onUpvote, onDownvote }) {
     return date.toLocaleString();
   };
 
+  const isUpvoted = currentVote === "up";
+  const isDownvoted = currentVote === "down";
+  const isAdmin = userRole === "admin";
+  const isPending = approvalStatus === "pending";
+
   return (
     <div className="marker-data-display">
-      <h1 className={headerClass}>{title || getModeLabel(type)}</h1>
+      <h1 className={headerClass}>{title || displayName || getModeLabel(type)}</h1>
 
-      {type !== "announcement" && (
-        <div className="vote-controls">
-          <button onClick={onUpvote} aria-label="Upvote">
-            <ArrowUp size={20} />
-          </button>
-          <span>{upvoteCount || 0}</span>
-          <button onClick={onDownvote} aria-label="Downvote">
-            <ArrowDown size={20} />
-          </button>
-          <span>{downvoteCount || 0}</span>
+      {type === "connection" && (
+        <div className="connection-details">
+          <img
+            src={profileImageUrl}
+            alt={displayName}
+            className="connection-pfp"
+          />
+          <div className="connection-info">
+            <span className="connection-name">{displayName}</span>
+            <span className="connection-score">
+              <Award size={16} />
+              {credibilityScore || 0} Credibility
+            </span>
+          </div>
         </div>
       )}
 
@@ -239,43 +283,60 @@ function MarkerDetailsPanel({ marker, onUpvote, onDownvote }) {
         </div>
       )}
 
-      <div className="details">
-        <h4>Details</h4>
-        <p>{description || "No description provided."}</p>
-        {type === "hazard" && (
-          <p>
-            <strong>Type:</strong> {isPlanned ? "Planned" : "Unplanned"}
+      {description && (
+        <div className="details">
+          <h4>Details</h4>
+          <p className="detail-description">
+            {description}
           </p>
-        )}
-        {(type === "announcement" || (type === "hazard" && isPlanned)) && (
-          <>
+          {type === "hazard" && (
             <p>
-              <strong>Starts:</strong> {formatTimestamp(startTime)}
+              <strong>Type:</strong>{" "}
+              <span
+                className={
+                  isPlanned ? "planned-outage" : "unplanned-outage"
+                }
+              >
+                {isPlanned ? "Planned" : "Unplanned"}
+              </span>
             </p>
-            <p>
-              <strong>Ends:</strong> {formatTimestamp(endTime)}
-            </p>
-          </>
-        )}
-      </div>
+          )}
+          {(type === "announcement" || (type === "hazard" && isPlanned)) && (
+            <>
+              <p>
+                <strong>Starts:</strong> {formatTimestamp(startTime)}
+              </p>
+              <p>
+                <strong>Ends:</strong> {formatTimestamp(endTime)}
+              </p>
+            </>
+          )}
+        </div>
+      )}
 
-      <div className="status">
-        {reporterName && (
-          <p>
-            <strong>Reporter:</strong> {reporterName}
-          </p>
-        )}
-        {responseStatus && (
-          <p>
-            <strong>Status:</strong> {responseStatus}
-          </p>
-        )}
-        {approvalStatus && (
-          <p>
-            <strong>Approval:</strong> {approvalStatus}
-          </p>
-        )}
-      </div>
+      {type !== "connection" && (
+        <div className="status">
+          {reporterName && (
+            <p>
+              <strong>Reporter:</strong> {reporterName}
+            </p>
+          )}
+          {responseStatus && (
+            <p>
+              <strong>Status:</strong>{" "}
+              <span className={`status-${responseStatus.replace(" ", "-")}`}>
+                {responseStatus}
+              </span>
+            </p>
+          )}
+          {approvalStatus && (
+            <p>
+              <strong>Approval:</strong>{" "}
+              <span className={`status-${approvalStatus}`}>{approvalStatus}</span>
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="location">
         <h4>Location</h4>
@@ -286,11 +347,68 @@ function MarkerDetailsPanel({ marker, onUpvote, onDownvote }) {
           <strong>Longitude:</strong> {pos.lng.toFixed(5)}
         </p>
       </div>
+
+      {isAdmin && isPending && type !== "announcement" && type !== "connection" && (
+        <div className="admin-approval-controls">
+          <h4>Admin Action</h4>
+          <div className="admin-buttons">
+            <button
+              className="button-primary approve-button"
+              onClick={onApprove}
+            >
+              <Check size={18} /> Approve
+            </button>
+            <button
+              className="button-secondary reject-button"
+              onClick={onReject}
+            >
+              <XCircle size={18} /> Reject
+            </button>
+          </div>
+        </div>
+      )}
+
+      {type !== "announcement" && type !== "connection" && (
+        <div className="vote-controls-wrapper">
+          <div className="vote-controls">
+            <button
+              onClick={onUpvote}
+              aria-label="Upvote"
+              className={`vote-button ${isUpvoted ? "active" : ""}`}
+              disabled={isUpvoted}
+            >
+              <ArrowUpCircle size={22} />
+              <span>{upvoteCount || 0}</span>
+            </button>
+            <button
+              onClick={onDownvote}
+              aria-label="Downvote"
+              className={`vote-button ${isDownvoted ? "active" : ""}`}
+              disabled={isDownvoted}
+            >
+              <ArrowDownCircle size={22} />
+              <span>{downvoteCount || 0}</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function Sidebar({ selectedMarker, onUpvote, onDownvote }) {
+function Sidebar({
+  selectedMarker,
+  onUpvote,
+  onDownvote,
+  votedItems,
+  userRole,
+  onApprove,
+  onReject,
+}) {
+  const currentVote = selectedMarker
+    ? votedItems[selectedMarker.id]
+    : null;
+
   return (
     <aside className="info-sidebar">
       <div className="sidebar-content-wrapper">
@@ -300,6 +418,10 @@ function Sidebar({ selectedMarker, onUpvote, onDownvote }) {
               marker={selectedMarker}
               onUpvote={onUpvote}
               onDownvote={onDownvote}
+              currentVote={currentVote}
+              userRole={userRole}
+              onApprove={onApprove}
+              onReject={onReject}
             />
           ) : (
             <DefaultSidebarPanel />
@@ -310,7 +432,15 @@ function Sidebar({ selectedMarker, onUpvote, onDownvote }) {
   );
 }
 
-function AddPinModal({ isOpen, onClose, onSubmit, markerInfo, currentUserRole }) {
+function AddPinModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  markerInfo,
+  currentUserRole,
+  onDrawArea,
+  polygonPoints,
+}) {
   const [formData, setFormData] = useState(initialFormData);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -323,6 +453,10 @@ function AddPinModal({ isOpen, onClose, onSubmit, markerInfo, currentUserRole })
   if (!isOpen || !markerInfo) return null;
 
   const { type } = markerInfo;
+  const isPlannedHazard =
+    type === "hazard" &&
+    currentUserRole === "admin" &&
+    formData.isPlanned;
 
   const handleFormChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -361,6 +495,11 @@ function AddPinModal({ isOpen, onClose, onSubmit, markerInfo, currentUserRole })
         }
       }
 
+      const geoPointsPayload =
+        polygonPoints.length > 2
+          ? polygonPoints.map((p) => new GeoPoint(p.lat, p.lng))
+          : [];
+
       const payload = {
         title,
         description,
@@ -369,6 +508,7 @@ function AddPinModal({ isOpen, onClose, onSubmit, markerInfo, currentUserRole })
         isPlanned: currentUserRole === "admin" ? isPlanned : false,
         startTime: startTime || null,
         endTime: endTime || null,
+        geopoints: geoPointsPayload,
       };
 
       await onSubmit(type, payload);
@@ -436,21 +576,21 @@ function AddPinModal({ isOpen, onClose, onSubmit, markerInfo, currentUserRole })
             </div>
           )}
 
-        <div className="controls-bottom-right">
-          {markerMode !== "none" && (
-            <div className="current-mode-notice">
-              Adding: <strong>{getModeLabel(markerMode)}</strong>
-              <button
-                onClick={() => setMarkerMode("none")}
-                aria-label="Cancel adding pin"
-              >
-                (Cancel)
-              </button>
+          {type === "hazard" && currentUserRole === "admin" && (
+            <div className="form-group-checkbox">
+              <input
+                type="checkbox"
+                id="isPlanned"
+                name="isPlanned"
+                checked={formData.isPlanned}
+                onChange={handleFormChange}
+                disabled={isUploading}
+              />
+              <label htmlFor="isPlanned">Is this a planned outage?</label>
             </div>
           )}
 
-          {(type === "announcement" ||
-            (type === "hazard" && formData.isPlanned)) && (
+          {(type === "announcement" || isPlannedHazard) && (
             <>
               <div className="form-group">
                 <label htmlFor="startTime">Start Time (Optional)</label>
@@ -477,130 +617,213 @@ function AddPinModal({ isOpen, onClose, onSubmit, markerInfo, currentUserRole })
             </>
           )}
 
+          {(type === "announcement" || isPlannedHazard) && (
+            <div className="form-group">
+              <label>Affected Area</label>
+              <button
+                type="button"
+                className="button-secondary"
+                onClick={onDrawArea}
+                disabled={isUploading}
+              >
+                <Edit size={16} />
+                {polygonPoints.length > 0 ? `Redraw Area (${polygonPoints.length} points)` : "Draw Area"}
+              </button>
+            </div>
+          )}
+
           <div className="modal-footer">
             <button
-              onClick={zoomIn}
-              className="map-button-circle"
-              title="Zoom In"
-              aria-label="Zoom in"
+              type="button"
+              onClick={onClose}
+              className="button-secondary"
+              disabled={isUploading}
             >
-              <Plus size={24} />
+              Cancel
             </button>
             <button
-              onClick={zoomOut}
-              className="map-button-circle"
-              title="Zoom Out"
-              aria-label="Zoom out"
+              type="submit"
+              className="button-primary"
+              disabled={isUploading}
             >
-              <Minus size={24} />
+              {isUploading ? "Submitting..." : "Submit"}
             </button>
           </div>
+        </form>
+      </div>
+    </div>
+  );
+}
 
-          <div
-            className={`control-group expandable-menu ${
-              isPinMenuOpen ? "menu-open" : ""
-            }`}
-          >
-            <div className="sub-buttons">
-              <button
-                className="map-button-circle mode-button report"
-                title="Add User Report"
-                aria-label="Add report pin"
-                onClick={() => handleSetMarkerMode("report")}
-              >
-                <Flag size={20} />
-              </button>
-              <button
-                className="map-button-circle mode-button hazard"
-                title="Add Hazard"
-                aria-label="Add hazard pin"
-                onClick={() => handleSetMarkerMode("hazard")}
-              >
-                <TriangleAlert size={20} />
-              </button>
-              <button
-                className="map-button-circle mode-button announcement"
-                title="Add Announcement"
-                aria-label="Add announcement pin"
-                onClick={() => handleSetMarkerMode("announcement")}
-              >
-                <Megaphone size={20} />
-              </button>
-            </div>
-            <button
-              className="map-button-circle menu-toggle-button toggle-pins"
-              title="Add Pin"
-              aria-label="Toggle pin menu"
-              onClick={() => setIsPinMenuOpen(!isPinMenuOpen)}
-            >
-              <Pin size={20} />
-            </button>
-          </div>
+function ZoomControls({ onZoomIn, onZoomOut }) {
+  return (
+    <div className="control-group zoom-controls">
+      <button
+        onClick={onZoomIn}
+        className="map-button-circle"
+        title="Zoom In"
+        aria-label="Zoom in"
+      >
+        <Plus size={24} />
+      </button>
+      <button
+        onClick={onZoomOut}
+        className="map-button-circle"
+        title="Zoom Out"
+        aria-label="Zoom out"
+      >
+        <Minus size={24} />
+      </button>
+    </div>
+  );
+}
 
-          <div
-            className={`control-group expandable-menu ${
-              isLayerMenuOpen ? "menu-open" : ""
-            }`}
+function PinMenu({ onSetMode, userRole }) {
+  const [isPinMenuOpen, setIsPinMenuOpen] = useState(false);
+
+  const handleSetMode = (mode) => {
+    onSetMode(mode);
+    setIsPinMenuOpen(false);
+  };
+
+  return (
+    <div
+      className={`control-group expandable-menu ${
+        isPinMenuOpen ? "menu-open" : ""
+      }`}
+    >
+      <div className="sub-buttons">
+        <button
+          className="map-button-circle mode-button report"
+          title="Add User Report"
+          aria-label="Add report pin"
+          onClick={() => handleSetMode("report")}
+        >
+          <Flag size={20} />
+        </button>
+        <button
+          className="map-button-circle mode-button hazard"
+          title="Add Outage/Hazard"
+          aria-label="Add outage/hazard pin"
+          onClick={() => handleSetMode("hazard")}
+        >
+          <TriangleAlert size={20} />
+        </button>
+        {userRole === "admin" && (
+          <button
+            className="map-button-circle mode-button announcement"
+            title="Add Announcement"
+            aria-label="Add announcement pin"
+            onClick={() => handleSetMode("announcement")}
           >
-            <div className="sub-buttons">
-              <button
-                className="map-button-circle layer-button"
-                title="Light Map"
-                aria-label="Light map"
-                onClick={() => handleSetLayer(mapLayers.light)}
-              >
-                <Sun size={20} />
-              </button>
-              <button
-                className="map-button-circle layer-button"
-                title="Street Map"
-                aria-label="Street map"
-                onClick={() => handleSetLayer(mapLayers.street)}
-              >
-                <MapIcon size={20} />
-              </button>
-              <button
-                className="map-button-circle layer-button"
-                title="B&W Map"
-                aria-label="B&W map"
-                onClick={() => handleSetLayer(mapLayers.toner)}
-              >
-                <Palette size={20} />
-              </button>
-              <button
-                className="map-button-circle layer-button"
-                title="Terrain Map"
-                aria-label="Terrain map"
-                onClick={() => handleSetLayer(mapLayers.terrain)}
-              >
-                <Mountain size={20} />
-              </button>
-              <button
-                className="map-button-circle layer-button"
-                title="Satellite Map"
-                aria-label="Satellite map"
-                onClick={() => handleSetLayer(mapLayers.satellite)}
-              >
-                <Satellite size={20} />
-              </button>
-              <button
-                className="map-button-circle layer-button"
-                title="Dark Map"
-                aria-label="Dark map"
-                onClick={() => handleSetLayer(mapLayers.dark)}
-              >
-                <Moon size={20} />
-              </button>
-            </div>
-            <button
-              className="map-button-circle menu-toggle-button toggle-layers"
-              title="Change Layer"
-              aria-label="Toggle layer menu"
-              onClick={() => setIsLayerMenuOpen(!isLayerMenuOpen)}
-            >
-              <Layers size={20} />
-            </button>
-          </div>
+            <Megaphone size={20} />
+          </button>
+        )}
+      </div>
+      <button
+        className="map-button-circle menu-toggle-button toggle-pins"
+        title="Add Pin"
+        aria-label="Toggle pin menu"
+        onClick={() => setIsPinMenuOpen(!isPinMenuOpen)}
+      >
+        <Pin size={20} />
+      </button>
+    </div>
+  );
+}
+
+function LayerMenu({ onSetLayer }) {
+  const [isLayerMenuOpen, setIsLayerMenuOpen] = useState(false);
+
+  const handleSetLayer = (layer) => {
+    onSetLayer(layer);
+    setIsLayerMenuOpen(false);
+  };
+
+  return (
+    <div
+      className={`control-group expandable-menu ${
+        isLayerMenuOpen ? "menu-open" : ""
+      }`}
+    >
+      <div className="sub-buttons">
+        <button
+          className="map-button-circle layer-button"
+          title="Light Map"
+          aria-label="Light map"
+          onClick={() => handleSetLayer(mapLayers.light)}
+        >
+          <Sun size={20} />
+        </button>
+        <button
+          className="map-button-circle layer-button"
+          title="Street Map"
+          aria-label="Street map"
+          onClick={() => handleSetLayer(mapLayers.street)}
+        >
+          <MapIcon size={20} />
+        </button>
+        <button
+          className="map-button-circle layer-button"
+          title="B&W Map"
+          aria-label="B&W map"
+          onClick={() => handleSetLayer(mapLayers.toner)}
+        >
+          <Palette size={20} />
+        </button>
+        <button
+          className="map-button-circle layer-button"
+          title="Terrain Map"
+          aria-label="Terrain map"
+          onClick={() => handleSetLayer(mapLayers.terrain)}
+        >
+          <Mountain size={20} />
+        </button>
+        <button
+          className="map-button-circle layer-button"
+          title="Satellite Map"
+          aria-label="Satellite map"
+          onClick={() => handleSetLayer(mapLayers.satellite)}
+        >
+          <Satellite size={20} />
+        </button>
+        <button
+          className="map-button-circle layer-button"
+          title="Dark Map"
+          aria-label="Dark map"
+          onClick={() => handleSetLayer(mapLayers.dark)}
+        >
+          <Moon size={20} />
+        </button>
+      </div>
+      <button
+        className="map-button-circle menu-toggle-button toggle-layers"
+        title="Change Layer"
+        aria-label="Toggle layer menu"
+        onClick={() => setIsLayerMenuOpen(!isLayerMenuOpen)}
+      >
+        <Layers size={20} />
+      </button>
+    </div>
+  );
+}
+
+function MapControls({
+  markerMode,
+  onSetMode,
+  onZoomIn,
+  onZoomOut,
+  onSetLayer,
+  userRole,
+}) {
+  return (
+    <div className="controls-bottom-right">
+      {markerMode !== "none" && (
+        <div className="current-mode-notice">
+          Adding: <strong>{getModeLabel(markerMode)}</strong>
+          <button onClick={() => onSetMode("none")} aria-label="Cancel adding pin">
+            (Cancel)
+          </button>
         </div>
       )}
 
