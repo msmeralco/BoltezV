@@ -519,6 +519,7 @@ export async function addDummyUserWithInventory(name) {
       pendingRequestsIn: {},
       pendingRequestsOut: {},
       profileImageUrl,
+      userRole: 'regular',
     });
 
     const laptopUrl = "https://res.cloudinary.com/ddr9shttr/image/upload/v1762953510/laptop_vlww85.jpg";
