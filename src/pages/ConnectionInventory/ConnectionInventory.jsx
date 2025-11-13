@@ -7,16 +7,15 @@ import styles from './ConnectionInventory.module.css';
 
 function ConnectionInventory() {
   const { connectionId } = useParams();
-  const { user } = useAuth(); // Get the *currently logged-in* user
+  const { user } = useAuth(); 
 
   const [connectionUser, setConnectionUser] = useState(null);
   const [appliances, setAppliances] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isAllowed, setIsAllowed] = useState(false); // State to manage privacy
-  const [consumptionSummary, setConsumptionSummary] = useState(null); // State for dynamic consumption summary
+  const [isAllowed, setIsAllowed] = useState(false); 
+  const [consumptionSummary, setConsumptionSummary] = useState(null); 
 
-  // Effect 1: Fetch the static data for the connection (the profile)
   useEffect(() => {
     async function getConnectionUser() {
       if (!connectionId) return;
@@ -27,16 +26,10 @@ function ConnectionInventory() {
         const connectionUserData = await getUserByUid(connectionId);
         setConnectionUser(connectionUserData);
 
-        // --- Privacy Check ---
-        // Check if the current user is allowed to see this inventory
         const privacy = connectionUserData.consumptionSharingPrivacy;
         const myConnections = connectionUserData.connections || {};
         
-        // You are allowed if...
-        // 1. The profile is "public"
-        // 2. The profile is "networkOnly" AND you are in their connection list
-        // (Assuming 'user.uid' is the logged-in user)
-        if (privacy === "public" || (privacy === "networkOnly" && myConnections[user.uid])) {
+        if (privacy === "public" || (privacy === "connectionsOnly" && myConnections[user.uid])) {
           setIsAllowed(true);
         } else {
           setIsAllowed(false);
@@ -52,24 +45,22 @@ function ConnectionInventory() {
     }
 
     getConnectionUser();
-  }, [connectionId, user]); // Re-run if the connectionId or logged-in user changes
+  }, [connectionId, user]); 
 
-  // Effect 2: Set up the real-time listener for the inventory
-  // This effect depends on 'connectionId' and our 'isAllowed' state
+
   useEffect(() => {
-    // Only run if we have a connection and we are allowed to view
+
     if (!connectionId || !isAllowed) {
-      setAppliances([]); // Clear appliances if not allowed
-      setConsumptionSummary(null); // Clear consumption summary if not allowed
+      setAppliances([]);
+      setConsumptionSummary(null);
       return;
     }
 
-    // Set up the callbacks for the listener
     const handleData = (applianceData) => {
       setAppliances(applianceData);
       setLoading(false);
 
-      // Use calculateConsumptionSummary to dynamically update the consumption summary
+      
       const summary = calculateConsumptionSummary(applianceData);
       setConsumptionSummary({
         applianceCount: summary.applianceCount,
@@ -85,20 +76,17 @@ function ConnectionInventory() {
       setLoading(false);
     };
 
-    // 1. Call the service function to start the listener
     const unsubscribe = listenToUserInventory(
       connectionId,
       handleData,
       handleError
     );
 
-    // 2. Return the unsubscribe function for cleanup
     return () => {
       unsubscribe();
     };
-  }, [connectionId, isAllowed]); // This will run when 'isAllowed' becomes true
+  }, [connectionId, isAllowed]); 
 
-  // --- Render Logic ---
 
   if (loading) {
     return <div>Loading inventory...</div>;
@@ -110,7 +98,7 @@ function ConnectionInventory() {
 
   return (
     <div className={styles.inventoryPageContainer}>
-      {/* Consumption summary first (matches Inventory layout) */}
+      
       <section className={styles.inventorySection}>
         <h2>Consumption Summary</h2>
         <div className={styles.summaryGrid}>

@@ -142,14 +142,17 @@
   color: var(--white);
 }
 
-.connectionActions .requestedBtn {
+.connectionActions .requestedBtn,
+.sendConnectionRequest .requestedBtn,
+.connectionMeta .connectionsBtn .requestedBtn {
+  
   background: #e6e6e6;
   color: #666666;
+  pointer-events: none;
 }
 
 .connectionActions button:hover:not(:disabled),
 .connectionMeta .connectionsBtn button:hover:not(:disabled) {
-  /* small lift + subtle brighten to highlight the button */
   filter: brightness(1.04);
   box-shadow: 0 8px 18px rgba(0,0,0,0.08);
 }

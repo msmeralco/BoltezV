@@ -99,11 +99,11 @@ function Connections() {
         </button>
       );
     } else if (iSentThemRequest) {
-      return <button className={styles.requestedBtn} disabled>Requested</button>;
+      return <button className={styles.requestedBtn} disabled >Requested</button>;
     } else {
       return (
         <button className={styles.requestBtn} onClick={() => handleSendRequest(nonConnection.id)}>
-          Send Connection Request
+          Send Request
         </button>
       );
     }
@@ -186,8 +186,13 @@ function Connections() {
       <br />
 
       {findConnectionsLoading && (
-        <div className={styles.modalOverlay} role="dialog" aria-modal="true">
-          <div className={styles.modalDialog}>
+        <div
+          className={styles.modalOverlay}
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setFindConnectionsLoading(false)}
+        >
+          <div className={styles.modalDialog} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2>Find Connections</h2>
               <button className={styles.modalClose} onClick={() => setFindConnectionsLoading(false)}>Close</button>
