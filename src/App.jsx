@@ -19,7 +19,9 @@ function App() {
 
   return (
     <div>
-        <NavigationBar />
+        <div className="nav-center-container">
+          <NavigationBar />
+        </div>
         <Routes>
             <Route path="/" element={
               <ProtectedRoute>

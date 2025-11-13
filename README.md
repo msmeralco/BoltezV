@@ -1,3 +1,3 @@
-# React Firebase Practice
-Practice for Voltizen
+# Voltizen
+Full-Stack Web App for the Meralco IDOL Hackathon
 

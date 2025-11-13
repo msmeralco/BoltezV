@@ -1,0 +1,80 @@
+.navbar{
+    height: auto;
+    width: 100%;
+    background-color: transparent;
+    border-radius: 20px;
+    white-space: nowrap;
+
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+}
+
+.logoContainer{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 10px;
+}
+
+.navlinks{
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    align-items: center;
+    height: auto;
+
+    text-decoration: none;
+    font-size: 1rem;
+    margin-right: 10px;
+
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-700);
+    font-weight: bold;
+}
+
+
+.title{
+    color: var(--primary-500);
+    font-size: 1.5rem;
+    font-weight: 800 !important;
+}
+
+
+.navItem{
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.navItem a{
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: transform 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+    color: inherit;
+    text-decoration: none;
+}
+
+.navItem a:hover{
+    color: var(--primary-50);
+    background-color: var(--primary-500);
+    transform: scale(1.05);
+}
+
+
+.navItem a[aria-current="page"]{
+    background-color: var(--primary-500);
+    color: var(--primary-50);
+}
+
+.navItem:active{
+    color: var(--primary-500);
+    background-color: var(--tertiary-500);
+}
