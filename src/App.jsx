@@ -6,7 +6,7 @@ import Home from './pages/Home';
 import Profile from './pages/Profile/Profile.jsx';
 import Login from "./pages/Login";
 import TestPage from './pages/TestPage';
-import Connections from './pages/Connections';
+import Connections from './pages/Connection/Connections.jsx';
 import MapPage from './pages/MapPage';
 import ConnectionInventory from './pages/ConnectionInventory';
 import Inventory from './pages/Inventory';
