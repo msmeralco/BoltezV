@@ -20,7 +20,7 @@
   box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   z-index: 1001;
 }
 
@@ -90,7 +90,6 @@
   font-size: 1rem;
   line-height: 1.6;
   margin-top: 24px;
-  margin-top: 8px;
 }
 
 .marker-data-display h1 {
@@ -172,9 +171,6 @@
 .marker-data-display .location,
 .marker-data-display .status {
   margin-top: 24px;
-.marker-data-display .details,
-.marker-data-display .location {
-  margin-top: 20px;
 }
 
 .marker-data-display h4 {
@@ -332,7 +328,6 @@
 .vote-controls .vote-button:disabled {
   cursor: not-allowed;
   opacity: 0.7;
-  margin: 4px 0;
 }
 
 .controls-bottom-right {
