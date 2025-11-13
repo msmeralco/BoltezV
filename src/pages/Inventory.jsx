@@ -9,7 +9,8 @@ import { updateConsumptionSharingPrivacy } from "../firebaseServices/database/us
 import useAuth from "../firebaseServices/auth/useAuth";
 import IoTMonitor from "../components/inventory/IoTMonitor";
 import EditApplianceForm from "../components/inventory/EditApplianceForm";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { ResponsivePie } from "@nivo/pie";
 import styles from "./Inventory.module.css";
 
 function Inventory() {
@@ -69,6 +70,17 @@ function Inventory() {
       unsubscribe();
     };
   }, [user.uid]);
+
+  const pieData = useMemo(() => {
+    if (!appliances || appliances.length === 0) {
+      return [{ id: "No Data", label: "No Data", value: 1, color: "#cccccc" }];
+    }
+    return appliances.map((app) => ({
+      id: app.name,
+      label: app.name,
+      value: parseFloat(app.monthlyCost?.toFixed(2) || 0),
+    }));
+  }, [appliances]);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -306,6 +318,75 @@ function Inventory() {
   return (
     <div className={styles.inventoryPageContainer}>
       <section className={styles.inventorySection}>
+        <h2>Consumption Summary</h2>
+        <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "1.5rem", width: "100%", alignItems: "center" }}>
+          <div style={{ height: "350px", minWidth: "300px", flex: "1 1 60%", boxSizing: "border-box" }}>
+            <ResponsivePie
+              data={pieData}
+              colors={{ scheme: 'spectral' }}
+              margin={{ top: 20, right: 140, bottom: 20, left: 20 }}
+              innerRadius={0.5}
+              padAngle={0.7}
+              cornerRadius={3}
+              activeOuterRadiusOffset={8}
+              borderWidth={1}
+              borderColor={{ from: "color", modifiers: [["darker", 0.2]] }}
+              arcLinkLabelsSkipAngle={10}
+              arcLinkLabelsTextColor="#333333"
+              arcLinkLabelsThickness={2}
+              arcLinkLabelsColor={{ from: "color" }}
+              arcLabelsSkipAngle={10}
+              arcLabelsTextColor={{ from: "color", modifiers: [["darker", 2]] }}
+              legends={[
+                {
+                  anchor: "right",
+                  direction: "column",
+                  justify: false,
+                  translateX: 120,
+                  translateY: 0,
+                  itemsSpacing: 2,
+                  itemWidth: 100,
+                  itemHeight: 20,
+                  itemTextColor: "#999",
+                  itemDirection: "left-to-right",
+                  itemOpacity: 1,
+                  symbolSize: 18,
+                  symbolShape: "circle",
+                  effects: [
+                    {
+                      on: "hover",
+                      style: {
+                        itemTextColor: "#000",
+                      },
+                    },
+                  ],
+                },
+              ]}
+            />
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", flex: "1 1 30%", minWidth: "200px", boxSizing: "border-box" }}>
+            <div className={styles.summaryItem}>
+              <p>Total Appliances</p>
+              <span>{firestoreUser?.consumptionSummary?.applianceCount ?? 0}</span>
+            </div>
+            <div className={styles.summaryItem}>
+              <p>Est. Daily Bill</p>
+              <span>
+                PHP {firestoreUser?.consumptionSummary?.estimatedDailyBill?.toFixed(2) ?? "0.00"}
+              </span>
+            </div>
+            <div className={styles.summaryItem}>
+              <p>Est. Monthly Bill</p>
+              <span>
+                PHP {firestoreUser?.consumptionSummary?.estimatedMonthlyBill?.toFixed(2) ?? "0.00"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.inventorySection}>
         <h2>Your Inventory</h2>
         {appliances.length > 0 ? (
           <div style={{ display: "grid", gap: "1.5rem" }}>
@@ -415,32 +496,6 @@ function Inventory() {
         ) : (
           <p>You have no appliances in your inventory. Add one below to start tracking!</p>
         )}
-      </section>
-
-      <section className={styles.inventorySection}>
-        <h2>Consumption Summary</h2>
-        <div className={styles.summaryGrid}>
-          <div className={styles.summaryItem}>
-            <p>Total Appliances</p>
-            <span>{firestoreUser?.consumptionSummary?.applianceCount ?? 0}</span>
-          </div>
-          <div className={styles.summaryItem}>
-            <p>Est. Daily Bill</p>
-            <span>
-              PHP {firestoreUser?.consumptionSummary?.estimatedDailyBill?.toFixed(2) ?? "0.00"}
-            </span>
-          </div>
-          <div className={styles.summaryItem}>
-            <p>Est. Monthly Bill</p>
-            <span>
-              PHP {firestoreUser?.consumptionSummary?.estimatedMonthlyBill?.toFixed(2) ?? "0.00"}
-            </span>
-          </div>
-          <div className={`${styles.summaryItem} ${styles.topAppliance}`}>
-            <p>Top Appliance</p>
-            <span>{firestoreUser?.consumptionSummary?.topAppliance ?? "N/A"}</span>
-          </div>
-        </div>
       </section>
 
       <section className={styles.inventorySection}>
