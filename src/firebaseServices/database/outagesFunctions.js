@@ -130,3 +130,84 @@ export async function deleteOutage(outageId) {
     throw error;
   }
 }
+
+/**
+ * Updates the `responseStatus` field of an outage document in the `outages` collection.
+ *
+ * @param {string} outageId - The ID of the outage document to update.
+ * @param {string} newStatus - The new response status to set. Possible values: "not started", "in progress", "fixed".
+ * @returns {Promise<void>} Resolves when the document is successfully updated.
+ * @throws {Error} If the Firestore operation fails or the input parameters are invalid.
+ */
+export async function updateOutageResponseStatus(outageId, newStatus) {
+  if (!outageId || typeof outageId !== "string") {
+    throw new Error("Valid outageId is required");
+  }
+
+  if (!newStatus || typeof newStatus !== "string") {
+    throw new Error("Valid newStatus is required");
+  }
+
+  try {
+    const docRef = doc(db, "outages", outageId);
+    await updateDoc(docRef, { responseStatus: newStatus });
+    console.log(`Outage with ID ${outageId} updated to responseStatus: ${newStatus}`);
+  } catch (error) {
+    console.error("Error updating outage responseStatus:", error);
+    throw error;
+  }
+}
+
+/**
+ * Updates the `approvalStatus` field of an outage document in the `outages` collection.
+ *
+ * @param {string} outageId - The ID of the outage document to update.
+ * @param {string} newStatus - The new approval status to set. Possible values: "pending", "approved", "rejected".
+ * @returns {Promise<void>} Resolves when the document is successfully updated.
+ * @throws {Error} If the Firestore operation fails or the input parameters are invalid.
+ */
+export async function updateOutageApprovalStatus(outageId, newStatus) {
+  if (!outageId || typeof outageId !== "string") {
+    throw new Error("Valid outageId is required");
+  }
+
+  if (!newStatus || typeof newStatus !== "string") {
+    throw new Error("Valid newStatus is required");
+  }
+
+  try {
+    const docRef = doc(db, "outages", outageId);
+    await updateDoc(docRef, { approvalStatus: newStatus });
+    console.log(`Outage with ID ${outageId} updated to approvalStatus: ${newStatus}`);
+  } catch (error) {
+    console.error("Error updating outage approvalStatus:", error);
+    throw error;
+  }
+}
+
+/**
+ * Retrieves an outage document by its ID from the `outages` collection.
+ *
+ * @param {string} outageId - The ID of the outage document to retrieve.
+ * @returns {Promise<Object>} Resolves with the outage object if found.
+ * @throws {Error} If the Firestore operation fails or the outageId is invalid.
+ */
+export async function getOutageById(outageId) {
+  if (!outageId || typeof outageId !== "string") {
+    throw new Error("Valid outageId is required");
+  }
+
+  try {
+    const docRef = doc(db, "outages", outageId);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      throw new Error(`Outage with ID ${outageId} does not exist.`);
+    }
+
+    return { id: docSnap.id, ...docSnap.data() };
+  } catch (error) {
+    console.error("Error retrieving outage:", error);
+    throw error;
+  }
+}

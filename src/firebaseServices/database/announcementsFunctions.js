@@ -125,3 +125,30 @@ export async function deleteAnnouncement(announcementId) {
     throw error;
   }
 }
+
+/**
+ * Retrieves an announcement document by its ID from the `announcements` collection.
+ *
+ * @param {string} announcementId - The ID of the announcement document to retrieve.
+ * @returns {Promise<Object>} Resolves with the announcement object if found.
+ * @throws {Error} If the Firestore operation fails or the announcementId is invalid.
+ */
+export async function getAnnouncementById(announcementId) {
+  if (!announcementId || typeof announcementId !== "string") {
+    throw new Error("Valid announcementId is required");
+  }
+
+  try {
+    const docRef = doc(db, "announcements", announcementId);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      throw new Error(`Announcement with ID ${announcementId} does not exist.`);
+    }
+
+    return { id: docSnap.id, ...docSnap.data() };
+  } catch (error) {
+    console.error("Error retrieving announcement:", error);
+    throw error;
+  }
+}

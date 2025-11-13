@@ -130,3 +130,84 @@ export async function deleteReport(reportId) {
     throw error;
   }
 }
+
+/**
+ * Updates the `responseStatus` field of a report document in the `reports` collection.
+ *
+ * @param {string} reportId - The ID of the report document to update.
+ * @param {string} newStatus - The new response status to set. Possible values: "not started", "in progress", "fixed".
+ * @returns {Promise<void>} Resolves when the document is successfully updated.
+ * @throws {Error} If the Firestore operation fails or the input parameters are invalid.
+ */
+export async function updateReportResponseStatus(reportId, newStatus) {
+  if (!reportId || typeof reportId !== "string") {
+    throw new Error("Valid reportId is required");
+  }
+
+  if (!newStatus || typeof newStatus !== "string") {
+    throw new Error("Valid newStatus is required");
+  }
+
+  try {
+    const docRef = doc(db, "reports", reportId);
+    await updateDoc(docRef, { responseStatus: newStatus });
+    console.log(`Report with ID ${reportId} updated to responseStatus: ${newStatus}`);
+  } catch (error) {
+    console.error("Error updating report responseStatus:", error);
+    throw error;
+  }
+}
+
+/**
+ * Updates the `approvalStatus` field of a report document in the `reports` collection.
+ *
+ * @param {string} reportId - The ID of the report document to update.
+ * @param {string} newStatus - The new approval status to set. Possible values: "pending", "approved", "rejected".
+ * @returns {Promise<void>} Resolves when the document is successfully updated.
+ * @throws {Error} If the Firestore operation fails or the input parameters are invalid.
+ */
+export async function updateReportApprovalStatus(reportId, newStatus) {
+  if (!reportId || typeof reportId !== "string") {
+    throw new Error("Valid reportId is required");
+  }
+
+  if (!newStatus || typeof newStatus !== "string") {
+    throw new Error("Valid newStatus is required");
+  }
+
+  try {
+    const docRef = doc(db, "reports", reportId);
+    await updateDoc(docRef, { approvalStatus: newStatus });
+    console.log(`Report with ID ${reportId} updated to approvalStatus: ${newStatus}`);
+  } catch (error) {
+    console.error("Error updating report approvalStatus:", error);
+    throw error;
+  }
+}
+
+/**
+ * Retrieves a report document by its ID from the `reports` collection.
+ *
+ * @param {string} reportId - The ID of the report document to retrieve.
+ * @returns {Promise<Object>} Resolves with the report object if found.
+ * @throws {Error} If the Firestore operation fails or the reportId is invalid.
+ */
+export async function getReportById(reportId) {
+  if (!reportId || typeof reportId !== "string") {
+    throw new Error("Valid reportId is required");
+  }
+
+  try {
+    const docRef = doc(db, "reports", reportId);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      throw new Error(`Report with ID ${reportId} does not exist.`);
+    }
+
+    return { id: docSnap.id, ...docSnap.data() };
+  } catch (error) {
+    console.error("Error retrieving report:", error);
+    throw error;
+  }
+}

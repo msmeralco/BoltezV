@@ -351,7 +351,16 @@ export function listenToUserFeed(
           }
         });
 
-        // --- 3. Pass the data back to the React component ---
+        // --- 3. Sorting connections and nonConnnections ---
+        connections.sort((a, b) => (
+          (b.credibilityScore || 0) - (a.credibilityScore || 0)
+        ))
+
+        nonConnections.sort((a, b) => (
+          (b.credibilityScore || 0) - (a.credibilityScore || 0)
+        ))
+
+        // --- 4. Pass the data back to the React component ---
         onConnections(connections);
         onNonConnections(nonConnections);
       } catch (err) {
