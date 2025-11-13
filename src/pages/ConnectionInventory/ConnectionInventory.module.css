@@ -120,7 +120,6 @@ p {
 }
 
 .summaryItem {
-    /* polished summary card style copied from Inventory.module.css */
     background: var(--tertiary-50);
     border-radius: 12px;
     padding: 1.25rem;
@@ -155,7 +154,6 @@ p {
     color: var(--tertiary-500);
 }
 
-/* Consumption summary layout - match Inventory's design: left side pie, right side summary cards */
 .consumptionContainer {
     display: grid;
     gap: 1.25rem;
@@ -178,7 +176,6 @@ p {
 }
 
 .pieRect {
-    /* use contrasty fill + visible stroke so the placeholder is obvious */
     fill: var(--sidebar-bg);
     stroke: var(--secondary-base);
     stroke-width: 2;
@@ -242,7 +239,7 @@ p {
 
 @media (min-width: 768px) {
     .consumptionContainer {
-        grid-template-columns: 320px 1fr; /* fixed pie column + flexible summary */
+        grid-template-columns: 320px 1fr; 
         align-items: start;
     }
 
