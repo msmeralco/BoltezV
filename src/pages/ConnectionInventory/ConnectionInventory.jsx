@@ -109,51 +109,78 @@ function ConnectionInventory() {
   }
 
   return (
-    <div className={styles.ConnectionInventoryContainer}>
-      <h1>
-        {connectionUser
-          ? `${connectionUser.displayName}'s Inventory`
-          : "Connection Inventory"}
-      </h1>
+    <div className={styles.inventoryPageContainer}>
+      <section className={styles.inventorySection}>
+        <h2>{connectionUser ? `${connectionUser.displayName}'s Inventory` : 'Connection Inventory'}</h2>
 
-      {appliances.length > 0 ? (
-        <ul>
-          {appliances.map((appliance) => (
-            <li key={appliance.id}>
-              <strong>{appliance.name}</strong> ({appliance.type})
-              <br />
-              {appliance.imageUrl && (
-                <img
-                  src={appliance.imageUrl}
-                  alt={appliance.name}
-                  style={{ height: "300px", width: "auto" }}
-                />
-              )}
-              <p>Wattage: {appliance.wattage}W</p>
-              <p>Usage: {appliance.hoursPerDay} hours per day</p>
-              <p>Energy Consumption: {appliance.kWhPerDay?.toFixed(2)} kWh/day</p>
-              <p>Daily Cost: PHP {appliance.dailyCost?.toFixed(2)}</p>
-              <p>Weekly Cost: PHP {appliance.weeklyCost?.toFixed(2)}</p>
-              <p>Monthly Cost: PHP {appliance.monthlyCost?.toFixed(2)}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>This user has no appliances in their inventory.</p>
-      )}
+        {appliances.length > 0 ? (
+          <div style={{ display: 'grid', gap: '1.25rem' }}>
+            {appliances.map((appliance) => (
+              <div className={styles.applianceItem} key={appliance.id}>
+                <div className={styles.itemHeader}>
+                  <h3>{appliance.name}</h3>
+                  <h6 className={styles.subtitle}>{appliance.type}</h6>
+                </div>
 
-      <h2>Consumption Summary</h2>
-      {consumptionSummary ? (
-        <div>
-          <p>Total Appliances: {consumptionSummary.applianceCount}</p>
-          <p>Estimated Daily Bill: PHP {consumptionSummary.estimatedDailyBill.toFixed(2)}</p>
-          <p>Estimated Weekly Bill: PHP {consumptionSummary.estimatedWeeklyBill.toFixed(2)}</p>
-          <p>Estimated Monthly Bill: PHP {consumptionSummary.estimatedMonthlyBill.toFixed(2)}</p>
-          <p>Top Appliance: {consumptionSummary.topAppliance}</p>
+                {appliance.imageUrl && (
+                  <div className={styles.itemImageWrapper}>
+                    <img src={appliance.imageUrl} alt={appliance.name} />
+                  </div>
+                )}
+
+                <div className={styles.statsGrid}>
+                  <div className={styles.statsItem}>
+                    <strong>Wattage:</strong> {appliance.wattage}W
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Usage:</strong> {appliance.hoursPerDay} hours/day
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Consumption:</strong> {appliance.kWhPerDay?.toFixed(2)} kWh/day
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Daily Cost:</strong> PHP {appliance.dailyCost?.toFixed(2)}
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Weekly Cost:</strong> PHP {appliance.weeklyCost?.toFixed(2)}
+                  </div>
+                  <div className={styles.statsItem}>
+                    <strong>Monthly Cost:</strong> PHP {appliance.monthlyCost?.toFixed(2)}
+                  </div>
+                </div>
+
+                {/* <div className={styles.itemControls}>
+                  <button className={styles.formButton}>View Details</button>
+                </div> */}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>This user has no appliances in their inventory.</p>
+        )}
+      </section>
+
+      <section className={styles.inventorySection}>
+        <h2>Consumption Summary</h2>
+        <div className={styles.summaryGrid}>
+          <div className={styles.summaryItem}>
+            <p>Total Appliances</p>
+            <span>{consumptionSummary?.applianceCount ?? 0}</span>
+          </div>
+          <div className={styles.summaryItem}>
+            <p>Est. Daily Bill</p>
+            <span>PHP {consumptionSummary?.estimatedDailyBill?.toFixed(2) ?? '0.00'}</span>
+          </div>
+          <div className={styles.summaryItem}>
+            <p>Est. Monthly Bill</p>
+            <span>PHP {consumptionSummary?.estimatedMonthlyBill?.toFixed(2) ?? '0.00'}</span>
+          </div>
+          <div className={`${styles.summaryItem} ${styles.topAppliance}`}>
+            <p>Top Appliance</p>
+            <span>{consumptionSummary?.topAppliance ?? 'N/A'}</span>
+          </div>
         </div>
-      ) : (
-        <p>Consumption summary is not available.</p>
-      )}
+      </section>
     </div>
   );
 }
