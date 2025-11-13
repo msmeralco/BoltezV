@@ -1,5 +1,5 @@
 import { db } from "../firebaseConfig";
-import { where, collection, orderBy, addDoc, doc, updateDoc, getDoc, GeoPoint, deleteField, onSnapshot, query, documentId, deleteDoc, getDocs, serverTimestamp } from "firebase/firestore";
+import { collection, orderBy, addDoc, doc, updateDoc, getDoc, GeoPoint, onSnapshot, query, deleteDoc, serverTimestamp, increment } from "firebase/firestore";
 import { incrementUserCredibilityScore, decrementUserCredibilityScore } from "./usersFunctions";
 /**
  * Add an outage document to the `outages` collection.
