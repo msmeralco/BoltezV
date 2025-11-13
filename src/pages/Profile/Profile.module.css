@@ -14,6 +14,7 @@
 }
 
 
+
 .userInfo {
     display: flex;
     align-items: center;
@@ -96,6 +97,45 @@
     background-color: var(--primary-700);
 }
 
+/* Location sharing display on profile */
+.locationSharing {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+.locationBadge {
+    font-family: "Orbitron", sans-serif;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background-color: var(--tertiary-100);
+    color: var(--tertiary-900);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+.locationControls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.locationSelect {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--map-bg);
+}
+
+.locationUpdateBtn {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    background-color: var(--secondary-base);
+    color: var(--secondary-darkest);
+    font-weight: 700;
+    cursor: pointer;
+}
+.locationUpdateBtn:hover { filter: brightness(1.05); }
+
 /* small screens: stack content and reduce image size */
 @media (max-width: 768px) {
     .profileContainer {
@@ -126,4 +166,153 @@
     .userInfo h1 {
         font-size: 1.1rem;
     }
+}
+
+/* Dialog / Sharing form styles (reused from Inventory.module.css) */
+.dialogBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.dialogContent {
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    padding: 1.5rem 2rem 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.dialogTitle {
+    font-family: "Orbitron", sans-serif;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    border-bottom: 2px solid var(--secondary-base);
+    padding-bottom: 0.5rem;
+}
+
+.dialogClose {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 1.75rem;
+    font-weight: 300;
+    color: var(--sidebar-text-muted);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.dialogClose:hover {
+    color: var(--sidebar-text);
+}
+
+.dialogContent .sharingForm {
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.sharingFormLeft {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.sharingCurrentSetting {
+    margin: 0;
+    white-space: nowrap;
+    color: var(--sidebar-text-muted);
+}
+
+.sharingCurrentSetting strong {
+    color: var(--sidebar-text);
+    font-weight: 700;
+}
+
+.sharingFormLeft .formGroup {
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.sharingFormLeft .formGroup label {
+    margin: 0;
+    white-space: nowrap;
+}
+
+.dialogContent .sharingForm .formButton {
+    margin: 0;
+}
+
+.formInput,
+.formSelect {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem;
+    font-family: "Montserrat", sans-serif;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--map-bg);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.formInput:focus,
+.formSelect:focus {
+    outline: none;
+    border-color: var(--secondary-base);
+    box-shadow: 0 0 0 2px var(--secondary-light);
+}
+
+.formButton {
+    font-family: "Orbitron", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.6rem 1.25rem;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: var(--secondary-base);
+    color: var(--secondary-darkest);
+    flex-shrink: 0;
+}
+.formButton:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.formButton:active {
+    transform: translateY(0);
+}
+
+.formButton.buttonDanger {
+    background-color: var(--primary-500);
+    color: var(--white);
+}
+.formButton.buttonDanger:hover {
+    background-color: var(--primary-500);
+    filter: brightness(1.1);
 }

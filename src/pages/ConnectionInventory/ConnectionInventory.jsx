@@ -110,23 +110,49 @@ function ConnectionInventory() {
 
   return (
     <div className={styles.inventoryPageContainer}>
+      {/* Consumption summary first (matches Inventory layout) */}
       <section className={styles.inventorySection}>
-        <h2>{connectionUser ? `${connectionUser.displayName}'s Inventory` : 'Connection Inventory'}</h2>
+        <h2>Consumption Summary</h2>
+        <div className={styles.summaryGrid}>
+          <div className={styles.summaryItem}>
+            <p>Total Appliances</p>
+            <span>{consumptionSummary?.applianceCount ?? 0}</span>
+          </div>
+          <div className={styles.summaryItem}>
+            <p>Est. Daily Bill</p>
+            <span>PHP {consumptionSummary?.estimatedDailyBill?.toFixed(2) ?? '0.00'}</span>
+          </div>
+          <div className={styles.summaryItem}>
+            <p>Est. Monthly Bill</p>
+            <span>PHP {consumptionSummary?.estimatedMonthlyBill?.toFixed(2) ?? '0.00'}</span>
+          </div>
+          <div className={`${styles.summaryItem} ${styles.topAppliance}`}>
+            <p>Top Appliance</p>
+            <span>{consumptionSummary?.topAppliance ?? 'N/A'}</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Inventory section */}
+      <section className={styles.inventorySection}>
+        <div className={styles.inventoryHeader}>
+          <h2>{connectionUser ? `${connectionUser.displayName}'s Inventory` : 'Connection Inventory'}</h2>
+        </div>
 
         {appliances.length > 0 ? (
           <div style={{ display: 'grid', gap: '1.25rem' }}>
             {appliances.map((appliance) => (
               <div className={styles.applianceItem} key={appliance.id}>
-                <div className={styles.itemHeader}>
-                  <h3>{appliance.name}</h3>
-                  <h6 className={styles.subtitle}>{appliance.type}</h6>
-                </div>
-
                 {appliance.imageUrl && (
                   <div className={styles.itemImageWrapper}>
                     <img src={appliance.imageUrl} alt={appliance.name} />
                   </div>
                 )}
+
+                <div className={styles.itemHeader}>
+                  <h3>{appliance.name}</h3>
+                  <h6 className={styles.subtitle}>{appliance.type}</h6>
+                </div>
 
                 <div className={styles.statsGrid}>
                   <div className={styles.statsItem}>
@@ -148,38 +174,12 @@ function ConnectionInventory() {
                     <strong>Monthly Cost:</strong> PHP {appliance.monthlyCost?.toFixed(2)}
                   </div>
                 </div>
-
-                {/* <div className={styles.itemControls}>
-                  <button className={styles.formButton}>View Details</button>
-                </div> */}
               </div>
             ))}
           </div>
         ) : (
           <p>This user has no appliances in their inventory.</p>
         )}
-      </section>
-
-      <section className={styles.inventorySection}>
-        <h2>Consumption Summary</h2>
-        <div className={styles.summaryGrid}>
-          <div className={styles.summaryItem}>
-            <p>Total Appliances</p>
-            <span>{consumptionSummary?.applianceCount ?? 0}</span>
-          </div>
-          <div className={styles.summaryItem}>
-            <p>Est. Daily Bill</p>
-            <span>PHP {consumptionSummary?.estimatedDailyBill?.toFixed(2) ?? '0.00'}</span>
-          </div>
-          <div className={styles.summaryItem}>
-            <p>Est. Monthly Bill</p>
-            <span>PHP {consumptionSummary?.estimatedMonthlyBill?.toFixed(2) ?? '0.00'}</span>
-          </div>
-          <div className={`${styles.summaryItem} ${styles.topAppliance}`}>
-            <p>Top Appliance</p>
-            <span>{consumptionSummary?.topAppliance ?? 'N/A'}</span>
-          </div>
-        </div>
       </section>
     </div>
   );
