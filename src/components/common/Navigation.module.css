@@ -10,8 +10,8 @@
 }
 
 .logo{
-    width: 25px;
-    height: 25px;
+    width: 140px;
+    height: auto;
     object-fit: contain;
 }
 
@@ -82,4 +82,85 @@ a {
 .navItem:active{
     color: var(--primary-500);
     background-color: var(--tertiary-500);
+}
+
+/* Hamburger (hidden on large screens) */
+.hamburger{
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    position: relative;
+    z-index: 1000 !important; 
+}
+.hamburgerBox{
+    width: 22px;
+    height: 16px;
+    display: inline-block;
+    position: relative;
+}
+.hamburgerInner{
+    background-color: var(--primary-700);
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 -6px 0 0 var(--primary-700), 0 6px 0 0 var(--primary-700);
+    border-radius: 2px;
+}
+
+/* Overlay menu (right-top) */
+.overlay{
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 16px;
+    z-index: 1000 !important; 
+    transition: opacity 180ms ease, transform 180ms ease;
+}
+.overlay.open{
+    display: block;
+}
+.overlayContent{
+    background: var(--sidebar-bg, #fff);
+    border: 1px solid var(--border-color, #ddd);
+    min-width: 220px;
+    max-width: 320px;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    padding: 0.5rem;
+}
+.closeBtn{
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    float: right;
+    cursor: pointer;
+}
+.overlayLinks{
+    list-style: none;
+    padding: 0.5rem 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.overlayLinks li{
+    padding: 0.5rem 0.75rem;
+}
+.overlayLinks a{ display: block; }
+
+/* Responsive rules */
+@media (max-width: 900px){
+    .navlinks{ display: none; }
+    .hamburger{ display: inline-flex; }
+}
+
+@media (min-width: 901px){
+    .overlay{ display: none !important; }
 }

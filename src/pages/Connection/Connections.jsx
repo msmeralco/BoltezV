@@ -149,11 +149,11 @@ function Connections() {
                 <h2>{connection.displayName}</h2>
                 <p>Email: {connection.email}</p>
                 <div className={styles.connectionsBtn}>
-                  {[("connectionsOnly"), ("public")].includes(connection.locationSharingPrivacy) && (
+                  {/* {[("connectionsOnly"), ("public")].includes(connection.locationSharingPrivacy) && (
                     <Link to={`/mappage`}>
                       <button className={styles.locateMapBtn}>Locate in the map</button>
                     </Link>
-                  )}
+                  )} */}
                   {[("public"), ("connectionsOnly")].includes(connection.consumptionSharingPrivacy) && (
                     <>
                       <Link to={`/connections/${connection.id}/inventory`}>
