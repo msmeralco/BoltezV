@@ -16,6 +16,7 @@ import ReactDOMServer from "react-dom/server";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+import voltizenLogo from "../assets/voltizen-logo.png";
 
 import "./MapPage.css";
 import {
@@ -101,7 +102,7 @@ const createIcon = (color) => {
 
 const icons = {
   report: createIcon("#d81916"),
-  hazard: createIcon("#13dca3"),
+  outage: createIcon("#13dca3"),
   announcement: createIcon("#faca46"),
   connection: createLucideIcon(House, "#3b82f6"),
 };
@@ -177,7 +178,7 @@ const createCustomClusterIcon = (className) => {
 const getModeLabel = (mode) =>
   ({
     report: "User Report",
-    hazard: "Outage/Hazard",
+    outage: "Outage",
     announcement: "Announcement",
     connection: "Connection's Location",
   }[mode] || "None");
@@ -195,8 +196,11 @@ function DefaultSidebarPanel() {
   return (
     <div className="sidebar-default-content">
       <div className="logo-header">
-        <Zap className="volt-logo" size={32} />
-        <h1 className="voltizen-title">Voltizen</h1>
+        <img
+          src={voltizenLogo}
+          alt="Voltizen Logo"
+          className="voltizen-logo-img"
+        />
       </div>
       <p className="sidebar-tagline">Uniting Community & Consumption.</p>
       <p className="sidebar-instruction">
@@ -253,7 +257,7 @@ function MarkerDetailsPanel({
   const headerClass =
     {
       report: "header-report",
-      hazard: "header-hazard",
+      outage: "header-outage",
       announcement: "header-announcement",
       connection: "header-connection",
     }[type] || "";
@@ -296,7 +300,7 @@ function MarkerDetailsPanel({
         <div className="details">
           <h4>Details</h4>
           <p className="detail-description">{description}</p>
-          {type === "hazard" && (
+          {type === "outage" && (
             <p>
               <strong>Type:</strong>{" "}
               <span
@@ -489,8 +493,8 @@ function AddPinModal({
   if (!isOpen || !markerInfo) return null;
 
   const { type } = markerInfo;
-  const isPlannedHazard =
-    type === "hazard" &&
+  const isPlannedOutage =
+    type === "outage" &&
     currentUserRole === "admin" &&
     formData.isPlanned;
 
@@ -616,7 +620,7 @@ function AddPinModal({
             </div>
           )}
 
-          {type === "hazard" && currentUserRole === "admin" && (
+          {type === "outage" && currentUserRole === "admin" && (
             <div className="form-group-checkbox">
               <input
                 type="checkbox"
@@ -630,7 +634,7 @@ function AddPinModal({
             </div>
           )}
 
-          {(type === "announcement" || isPlannedHazard) && (
+          {(type === "announcement" || isPlannedOutage) && (
             <>
               <div className="form-group">
                 <label htmlFor="startTime">Start Time (Optional)</label>
@@ -657,7 +661,7 @@ function AddPinModal({
             </>
           )}
 
-          {(type === "announcement" || isPlannedHazard) && (
+          {(type === "announcement" || isPlannedOutage) && (
             <div className="form-group draw-area-group">
               <label>Affected Area</label>
               <div className="draw-area-controls">
@@ -763,7 +767,7 @@ function EditStatusModal({ isOpen, onClose, marker, onStatusUpdate }) {
     }
   };
 
-  const isUnplanned = !marker.isPlanned && marker.type === "hazard";
+  const isUnplanned = !marker.isPlanned && marker.type === "outage";
   const isReport = marker.type === "report";
 
   return (
@@ -903,10 +907,10 @@ function PinMenu({ onSetMode, userRole }) {
           <Flag size={20} />
         </button>
         <button
-          className="map-button-circle mode-button hazard"
-          title="Add Outage/Hazard"
-          aria-label="Add outage/hazard pin"
-          onClick={() => handleSetMode("hazard")}
+          className="map-button-circle mode-button outage"
+          title="Add Outage"
+          aria-label="Add outage pin"
+          onClick={() => handleSetMode("outage")}
         >
           <TriangleAlert size={20} />
         </button>
@@ -1027,7 +1031,7 @@ function FilterMenu({ filters, onFilterChange }) {
     >
       <div className="sub-buttons filter-buttons">
         <button
-          className={`map-button-circle filter-button ${
+          className={`map-button-circle filter-button filter-report ${
             filters.report ? "active" : ""
           }`}
           title="Toggle Reports"
@@ -1037,17 +1041,17 @@ function FilterMenu({ filters, onFilterChange }) {
           <Flag size={20} />
         </button>
         <button
-          className={`map-button-circle filter-button ${
-            filters.hazard ? "active" : ""
+          className={`map-button-circle filter-button filter-outage ${
+            filters.outage ? "active" : ""
           }`}
           title="Toggle Outages"
           aria-label="Toggle outages"
-          onClick={() => handleToggle("hazard")}
+          onClick={() => handleToggle("outage")}
         >
           <TriangleAlert size={20} />
         </button>
         <button
-          className={`map-button-circle filter-button ${
+          className={`map-button-circle filter-button filter-announcement ${
             filters.announcement ? "active" : ""
           }`}
           title="Toggle Announcements"
@@ -1057,7 +1061,7 @@ function FilterMenu({ filters, onFilterChange }) {
           <Megaphone size={20} />
         </button>
         <button
-          className={`map-button-circle filter-button ${
+          className={`map-button-circle filter-button filter-connection ${
             filters.connection ? "active" : ""
           }`}
           title="Toggle Connections"
@@ -1143,7 +1147,7 @@ function Toast({ isVisible, message }) {
 
 const polygonOptions = {
   report: { color: "var(--primary-500)", fillColor: "var(--primary-500)" },
-  hazard: { color: "var(--secondary-base)", fillColor: "var(--secondary-base)" },
+  outage: { color: "var(--secondary-base)", fillColor: "var(--secondary-base)" },
   announcement: { color: "var(--tertiary-500)", fillColor: "var(--tertiary-500)" },
 };
 
@@ -1179,7 +1183,7 @@ export default function MapPage() {
 
   const [filters, setFilters] = useState({
     report: true,
-    hazard: true,
+    outage: true,
     announcement: true,
     connection: true,
   });
@@ -1243,7 +1247,7 @@ export default function MapPage() {
       (r) => (isAdmin || r.approvalStatus === "approved") && filters.report
     );
     const visibleOutages = outages.filter(
-      (o) => (isAdmin || o.approvalStatus === "approved") && filters.hazard
+      (o) => (isAdmin || o.approvalStatus === "approved") && filters.outage
     );
     const visibleConnections = connections.filter(
       (c) =>
@@ -1265,14 +1269,14 @@ export default function MapPage() {
         type: "report",
       }));
 
-    const hazardMarkers = visibleOutages
+    const outageMarkers = visibleOutages
       .filter((o) => o.location?.latitude && o.location?.longitude)
       .map((o) => ({
         ...o,
         id: o.id,
         pos: { lat: o.location.latitude, lng: o.location.longitude },
         poly: o.geopoints?.map((p) => [p.latitude, p.longitude]) || [],
-        type: "hazard",
+        type: "outage",
       }));
 
     const announcementMarkers = visibleAnnouncements
@@ -1297,7 +1301,7 @@ export default function MapPage() {
 
     return {
       report: reportMarkers,
-      hazard: hazardMarkers,
+      outage: outageMarkers,
       announcement: announcementMarkers,
       connection: connectionMarkers,
     };
@@ -1374,7 +1378,7 @@ export default function MapPage() {
           reporterId: user.uid,
           reporterName: firestoreUser?.displayName || user.displayName,
         });
-      } else if (type === "hazard") {
+      } else if (type === "outage") {
         await addOutage({
           ...payload,
           reporterId: user.uid,
@@ -1414,7 +1418,7 @@ export default function MapPage() {
       await addReportIdToUserUpvoted(user.uid, id);
       if (type === "report") {
         await incrementReportUpvoteCount(id);
-      } else if (type === "hazard") {
+      } else if (type === "outage") {
         await incrementOutageUpvoteCount(id);
       }
     } catch (error) {
@@ -1446,7 +1450,7 @@ export default function MapPage() {
       await addReportIdToUserDownvoted(user.uid, id);
       if (type === "report") {
         await incrementReportDownvoteCount(id);
-      } else if (type === "hazard") {
+      } else if (type === "outage") {
         await incrementOutageDownvoteCount(id);
       }
     } catch (error) {
@@ -1462,7 +1466,7 @@ export default function MapPage() {
     try {
       if (type === "report") {
         await updateReportApprovalStatus(id, "approved");
-      } else if (type === "hazard") {
+      } else if (type === "outage") {
         await updateOutageApprovalStatus(id, "approved");
       }
       setSelectedMarker((prev) => ({ ...prev, approvalStatus: "approved" }));
@@ -1478,7 +1482,7 @@ export default function MapPage() {
     try {
       if (type === "report") {
         await updateReportApprovalStatus(id, "rejected");
-      } else if (type === "hazard") {
+      } else if (type === "outage") {
         await updateOutageApprovalStatus(id, "rejected");
       }
       setSelectedMarker((prev) => ({ ...prev, approvalStatus: "rejected" }));
@@ -1518,7 +1522,7 @@ export default function MapPage() {
       let docRef;
       if (type === "report") {
         docRef = doc(db, "reports", id);
-      } else if (type === "hazard") {
+      } else if (type === "outage") {
         docRef = doc(db, "outages", id);
       }
 
@@ -1540,7 +1544,7 @@ export default function MapPage() {
 
   const allPolygons = [
     ...allMarkers.report,
-    ...allMarkers.hazard,
+    ...allMarkers.outage,
     ...allMarkers.announcement,
   ].filter((m) => m.poly && m.poly.length > 2);
 
@@ -1651,10 +1655,10 @@ export default function MapPage() {
           </MarkerClusterGroup>
 
           <MarkerClusterGroup
-            className="hazard-cluster-group"
-            iconCreateFunction={createCustomClusterIcon("hazard-cluster-group")}
+            className="outage-cluster-group"
+            iconCreateFunction={createCustomClusterIcon("outage-cluster-group")}
           >
-            {allMarkers.hazard.map((marker) => (
+            {allMarkers.outage.map((marker) => (
               <Marker
                 key={marker.id}
                 position={marker.pos}
