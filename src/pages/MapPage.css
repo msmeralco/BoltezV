@@ -84,6 +84,12 @@
 .sidebar-default-content {
   text-align: center;
   padding-top: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .sidebar-default-content .voltizen-title {
@@ -97,6 +103,7 @@
 .sidebar-default-content .logo-header {
   justify-content: center;
   border-bottom: none;
+  margin-bottom: 8px;
 }
 
 .sidebar-default-content .sidebar-tagline {
@@ -128,7 +135,7 @@
   border-bottom-color: var(--primary-300);
 }
 
-.marker-data-display h1.header-hazard {
+.marker-data-display h1.header-outage {
   color: var(--secondary-base);
   border-bottom-color: var(--secondary-base);
 }
@@ -459,7 +466,7 @@
   color: var(--primary-50);
 }
 
-.mode-button.hazard {
+.mode-button.outage {
   background-color: var(--secondary-base);
   color: var(--secondary-darkest);
 }
@@ -473,21 +480,20 @@
   background-color: var(--grey-200);
   color: var(--grey-600);
 }
-
-.filter-button.active.filter-button:nth-child(4) {
-  background-color: var(--primary-500);
+.filter-button.active.filter-report {
+  background-color: #d81916;
   color: white;
 }
-.filter-button.active.filter-button:nth-child(3) {
-  background-color: var(--secondary-base);
+.filter-button.active.filter-outage {
+  background-color: #13dca3;
   color: var(--secondary-darkest);
 }
-.filter-button.active.filter-button:nth-child(2) {
-  background-color: var(--tertiary-500);
+.filter-button.active.filter-announcement {
+  background-color: #faca46;
   color: var(--tertiary-900);
 }
-.filter-button.active.filter-button:nth-child(1) {
-  background-color: var(--blue-v);
+.filter-button.active.filter-connection {
+  background-color: #3b82f6;
   color: white;
 }
 
@@ -577,14 +583,14 @@
   color: white;
 }
 
-.hazard-cluster-group.marker-cluster-small,
-.hazard-cluster-group.marker-cluster-medium,
-.hazard-cluster-group.marker-cluster-large {
+.outage-cluster-group.marker-cluster-small,
+.outage-cluster-group.marker-cluster-medium,
+.outage-cluster-group.marker-cluster-large {
   background-color: rgba(19, 220, 163, 0.2);
 }
-.hazard-cluster-group.marker-cluster-small div,
-.hazard-cluster-group.marker-cluster-medium div,
-.hazard-cluster-group.marker-cluster-large div {
+.outage-cluster-group.marker-cluster-small div,
+.outage-cluster-group.marker-cluster-medium div,
+.outage-cluster-group.marker-cluster-large div {
   background-color: rgba(19, 220, 163, 0.6);
   color: white;
 }
@@ -879,4 +885,10 @@
     width: 100%;
     gap: 8px;
   }
+}
+
+.voltizen-logo-img {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
 }
